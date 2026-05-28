@@ -128,7 +128,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <!-- Conteúdo Texto -->
-                    <div class="order-2 lg:order-1">
+                    <div class="order-2 lg:order-1 mt-8 lg:mt-12">
                         <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold text-gray-900 dark:text-white tracking-tight mb-2">
                             <span class="text-gradient hover-glow-effect transition-all duration-300">Marcos Vinicius</span>
                         </h1>
@@ -184,7 +184,8 @@
                                 <img src="assets/img/profile.jpeg" 
                                      alt="Foto de perfil de Marcos Vinicius"
                                      fetchpriority="high"
-                                     class="w-full h-full rounded-full object-cover border-4 border-blue-500 dark:border-blue-400 relative z-10 shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+                                     onload="this.classList.remove('opacity-0')"
+                                     class="w-full h-full rounded-full object-cover border-4 border-blue-500 dark:border-blue-400 relative z-10 shadow-[0_0_20px_rgba(59,130,246,0.2)] opacity-0 transition-opacity duration-[800ms] ease-out">
                             </div>
                         </div>
                     </div>

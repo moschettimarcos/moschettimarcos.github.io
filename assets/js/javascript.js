@@ -582,8 +582,8 @@ function openProjectModal(projectId) {
     modal.style.setProperty('--dynamic-color', theme.color);
     modal.style.setProperty('--dynamic-color-rgb', theme.rgb);
 
-    // Prepara o elemento HTML da imagem de fundo
-    const watermarkHtml = theme.logo ? `<img src="${theme.logo}" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 opacity-[0.03] dark:opacity-[0.08] pointer-events-none z-0" alt="Watermark">` : '';
+    // Prepara o elemento HTML da imagem de fundo com lazy loading
+    const watermarkHtml = theme.logo ? `<img src="${theme.logo}" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 opacity-[0.03] dark:opacity-[0.08] pointer-events-none z-0" alt="Watermark" loading="lazy">` : '';
 
     const lang = getInitialLanguage();
     // Puxa do dicionário se necessário, garantindo fallback elegante para o PT-BR
@@ -741,6 +741,7 @@ cursorGlow.className = 'cursor-glow';
 document.body.appendChild(cursorGlow);
 
 document.addEventListener('mousemove', (e) => {
+    if (window.innerWidth <= 768) return; // Otimização mobile: não processa eventos de mouse em telas touch
     cursorGlow.style.left = e.clientX + 'px';
     cursorGlow.style.top = e.clientY + 'px';
     cursorGlow.classList.add('active');
@@ -754,21 +755,30 @@ document.addEventListener('mouseleave', () => {
 const tiltCards = document.querySelectorAll('.project-card, .experience-card, .academic-card');
 
 tiltCards.forEach(card => {
+    let isTilting = false;
     card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-        
-        const rotateX = (y - centerY) / 10;
-        const rotateY = (centerX - x) / 10;
-        
-        card.style.setProperty('--rotate-x', `${-rotateX}deg`);
-        card.style.setProperty('--rotate-y', `${rotateY}deg`);
-        card.style.setProperty('--mouse-x', `${x}px`);
-        card.style.setProperty('--mouse-y', `${y}px`);
+        if (window.innerWidth <= 768) return; // Otimização mobile: ignora cálculos 3D pesados
+
+        if (!isTilting) {
+            window.requestAnimationFrame(() => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                card.style.setProperty('--rotate-x', `${-rotateX}deg`);
+                card.style.setProperty('--rotate-y', `${rotateY}deg`);
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+                isTilting = false;
+            });
+            isTilting = true;
+        }
     });
     
     card.addEventListener('mouseleave', () => {
@@ -827,39 +837,37 @@ buttons.forEach(button => {
     });
 });
 
+// ===== Efeito Fade-in para as Imagens dos Projetos =====
+document.querySelectorAll('.project-image').forEach(img => {
+    if (img.complete) {
+        img.classList.add('loaded');
+    } else {
+        img.addEventListener('load', () => img.classList.add('loaded'));
+    }
+});
+
 // ===== ScrollSpy (Detecção de Rolagem no Menu Ativo) =====
 const sectionsSpy = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-link');
-let isSpyScrolling = false;
 
 window.addEventListener('scroll', () => {
-    if (!isSpyScrolling) {
-        window.requestAnimationFrame(() => {
-            let current = '';
-            // Descobre qual seção está na tela
-            sectionsSpy.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (scrollY >= (sectionTop - 250)) { // 250px de margem pelo header
-                    current = section.getAttribute('id');
-                }
-            });
+    let current = '';
+    // Descobre qual seção está na tela
+    sectionsSpy.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (scrollY >= (sectionTop - 250)) { // 250px de margem pelo header
+            current = section.getAttribute('id');
+        }
+    });
 
-            // Atualiza os links do menu com classes do Tailwind
-            navLinks.forEach(link => {
-                // Garante que o estado padrão "desativado" sempre retorne
-                link.classList.remove('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
-                link.classList.add('text-gray-600', 'dark:text-gray-300');
-                
-                // Adiciona o destaque somente na seção atual
-                if (link.getAttribute('href') === `#${current}`) {
-                    link.classList.remove('text-gray-600', 'dark:text-gray-300');
-                    link.classList.add('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
-                }
-            });
-            isSpyScrolling = false;
-        });
-        isSpyScrolling = true;
-    }
+    // Atualiza os links do menu com classes do Tailwind
+    navLinks.forEach(link => {
+        link.classList.remove('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
+        }
+    });
 });
 
 // --- Lógica do Botão "Ver Mais" nos Certificados ---

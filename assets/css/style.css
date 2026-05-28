@@ -79,6 +79,7 @@ body::before {
     z-index: -2;
     pointer-events: none;
     animation: blob-float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, filter;
 }
 
 @keyframes blob-float {
@@ -458,6 +459,22 @@ section {
         .whatsapp-float-anim span {
             display: none !important;
         }
+        
+        /* ===== Otimizações de Performance Mobile ===== */
+        /* Reduz peso de GPU no desfoque do vidro (glassmorphism) */
+        .glass-section, .project-card, .experience-card, .academic-card, #details-modal #modal-content {
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+        }
+        
+        /* Pausa animações pesadas de fundo para poupar CPU/bateria no celular */
+        .blur-blob, body::before {
+            animation: none !important;
+        }
+        .blur-blob {
+            filter: blur(50px) !important;
+            opacity: 0.3 !important;
+        }
 }
 
 /* Garante que as tags de competência não tenham altura excessiva */
@@ -610,7 +627,12 @@ h1, h2, h3, h4 {
     width: 100%;
     height: 200px;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.8s ease-out;
+}
+
+.project-image.loaded {
+    opacity: 1;
 }
 
 .project-card:hover .project-image {
