@@ -1,0 +1,1058 @@
+/* Definição de Variáveis de Cor */
+:root {
+    /* Tema Claro */
+    --bg-primary: #f0f4f8; /* Fundo levemente mais tecnológico claro */
+    --bg-card: rgba(255, 255, 255, 0.7);
+    --bg-card-hover: rgba(243, 244, 246, 0.8);
+    --bg-glass-section: rgba(255, 255, 255, 0.6);
+    --bg-modal: rgba(249, 250, 251, 0.9);
+    --border-color: rgba(59, 130, 246, 0.2);
+    --text-neon: rgba(59, 130, 246, 0.15);
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(59, 130, 246, 0.4); /* Azul translúcido */
+    --scrollbar-thumb-hover: rgba(59, 130, 246, 0.8);
+    --accent-blue: #3B82F6;
+    --accent-blue-light: #60A5FA;
+    --accent-blue-dark: #2563EB;
+}
+
+html.dark {
+    /* Tema Escuro */
+    --bg-primary: #0d1117; /* Estilo GitHub/Terminal escuro e profundo */
+    --bg-card: rgba(22, 27, 34, 0.6);
+    --bg-card-hover: rgba(33, 38, 45, 0.8);
+    --bg-glass-section: rgba(13, 17, 23, 0.7);
+    --bg-modal: rgba(31, 41, 55, 0.85);
+    --border-color: rgba(59, 130, 246, 0.3);
+    --text-neon: rgba(59, 130, 246, 0.1);
+    --scrollbar-track: transparent; 
+    --scrollbar-thumb: rgba(59, 130, 246, 0.3); 
+    --scrollbar-thumb-hover: rgba(59, 130, 246, 0.7); 
+    --accent-blue: #60A5FA;
+    --accent-blue-light: #93C5FD;
+    --accent-blue-dark: #3B82F6;
+}
+
+/* Define a fonte Inter como padrão */
+body {
+    font-family: 'Inter', sans-serif;
+}
+/* Fundo com Gradiente Animado */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 15% 25%, rgba(59, 130, 246, 0.4), transparent 50%),
+        radial-gradient(circle at 85% 75%, rgba(37, 99, 235, 0.35), transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.15), transparent 60%);
+    background-size: 200% 200%, 200% 200%, 100% 100%;
+    animation: moveGradient 60s ease-in-out infinite;
+    z-index: -1;
+}
+
+@keyframes moveGradient {
+    0% { background-position: 0% 50%, 100% 50%, 50% 50%; }
+    50% { background-position: 100% 50%, 0% 50%, 50% 60%; }
+    100% { background-position: 0% 50%, 100% 50%, 50% 50%; }
+}
+
+/* ===== Elementos de Fundo Premium ===== */
+.cyber-grid {
+    position: fixed;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(59, 130, 246, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    z-index: -2;
+    pointer-events: none;
+}
+
+.blur-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -2;
+    pointer-events: none;
+    animation: blob-float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes blob-float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 50px) scale(1.1); }
+}
+
+/* Animação de Fade-in para seções */
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+.fade-in-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* Efeito de destaque sutil para seções */
+section {
+    scroll-margin-top: 80px; /* Ajusta o scroll-snap para o header fixo */
+}
+
+/* Efeito Glassmorphism base para seções de conteúdo */
+.glass-section {
+    background-color: var(--bg-glass-section);
+    border-radius: 1.25rem; /* rounded-2xl */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: none;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1.5rem; /* Menos padding no mobile para liberar espaço */
+    transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .glass-section {
+        padding: 2.5rem; /* Padding original no desktop */
+    }
+}
+
+.glass-section:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Estilo de Scrollbar Premium ===== */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Efeito Glassmorphism para os cards de Formação */
+.academic-card:hover {
+    background-color: var(--bg-card-hover);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--accent-blue);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.academic-card {
+    position: relative;
+    background-color: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.academic-card::before,
+.academic-card::after {
+    content: '';
+    position: absolute;
+    font-size: 3.5rem;
+    line-height: 1;
+    font-weight: 900;
+    color: var(--text-neon);
+    text-shadow: 0 0 30px rgba(59, 130, 246, 0.4), 0 0 60px rgba(59, 130, 246, 0.2);
+    z-index: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+    pointer-events: none;
+}
+
+.academic-card::before {
+    content: 'Q';
+    bottom: 10px;
+    left: 15px;
+    transform: rotate(-15deg);
+}
+
+.academic-card::after {
+    content: 'A';
+    top: 10px;
+    right: 15px;
+    transform: rotate(15deg);
+}
+
+.academic-card:hover::before,
+.academic-card:hover::after {
+    opacity: 1;
+    transform: rotate(0deg); /* Endireita as letras no hover */
+}
+
+/* Estilos específicos para experience-card (sem efeito QA) */
+.experience-card {
+    position: relative;
+    background-color: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+}
+
+.experience-card:hover {
+    background-color: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--accent-blue);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+
+/* Efeito Glassmorphism para o conteúdo do Modal */
+#details-modal #modal-content {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+/* Garante que o corpo do modal seja rolável em telas pequenas */
+#modal-body {
+    overflow-y: auto; /* Adiciona scroll vertical se necessário */
+}
+
+/* Efeito QA no fundo do Modal (Apenas quando tiver a classe qa-mode) */
+#details-modal.qa-mode #modal-content::before,
+#details-modal.qa-mode #modal-content::after {
+    content: '';
+    position: absolute;
+    font-size: 12em;
+    font-weight: 900;
+    color: var(--text-neon);
+    text-shadow: 0 0 40px rgba(59, 130, 246, 0.3), 0 0 80px rgba(59, 130, 246, 0.15);
+    z-index: -1;
+    pointer-events: none;
+}
+
+#details-modal.qa-mode #modal-content::before {
+    content: 'Q';
+    top: 0;
+    left: 10px;
+}
+
+#details-modal.qa-mode #modal-content::after {
+    content: 'A';
+    bottom: 0;
+    right: 10px;
+}
+
+/* --- Animação do Botão de Contato do Header --- */
+.header-contact-animated-btn {
+    background-color: #2563eb; /* Cor inicial (blue-600 do Tailwind) */
+    transition: all 0.3s ease;
+    text-decoration: none; /* Garante que não tenha sublinhado */
+}
+
+.header-contact-animated-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit; /* Herda o arredondamento do botão */
+    background: linear-gradient(45deg, var(--i), var(--j));
+    opacity: 0;
+    transition: 0.5s;
+    z-index: 0; /* Fica atrás do texto, mas na frente do brilho */
+}
+
+.header-contact-animated-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(45deg, var(--i), var(--j));
+    filter: blur(10px); /* Efeito de brilho */
+    opacity: 0;
+    transition: 0.5s;
+    z-index: -1; /* Fica atrás de tudo */
+}
+
+.header-contact-animated-btn:hover::before {
+    opacity: 1; /* Mostra o gradiente no hover */
+}
+
+.header-contact-animated-btn:hover::after {
+    opacity: 0.5; /* Mostra o brilho no hover */
+}
+
+.header-contact-animated-btn .relative.z-10 {
+    /* Garante que o texto esteja sempre acima dos pseudo-elementos */
+    color: white; /* Garante que o texto seja branco */
+}
+
+/* --- Animação dos Botões Sociais da Seção Hero --- */
+.hero-social-glow-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-social-glow-btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit; /* Herda o arredondamento do botão */
+    background: linear-gradient(45deg, var(--i), var(--j));
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: 0; /* Fica atrás do texto, mas na frente do brilho */
+}
+
+.hero-social-glow-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(45deg, var(--i), var(--j));
+    filter: blur(10px); /* Efeito de brilho */
+    opacity: 0;
+    transition: opacity 0.5s;
+    z-index: -1; /* Fica atrás de tudo */
+}
+
+.hero-social-glow-btn:hover::before {
+    opacity: 1; /* Mostra o gradiente no hover */
+}
+
+.hero-social-glow-btn:hover::after {
+    opacity: 0.5; /* Mostra o brilho no hover */
+}
+
+.hero-social-glow-btn .relative.z-10 {
+    /* Garante que o texto e ícone estejam sempre acima dos pseudo-elementos */
+    color: white; /* Garante que o texto seja branco */
+}
+
+
+/* --- Animação dos Botões de Contato --- */
+.contact-button {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    background: #2c3e50; /* Cor de fundo escura */
+    border-radius: 60px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+}
+
+.contact-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 60px;
+    background: linear-gradient(45deg, var(--i), var(--j));
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.contact-button::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    width: 100%;
+    height: 100%;
+    border-radius: 60px;
+    background: linear-gradient(45deg, var(--i), var(--j));
+    transition: 0.5s;
+    filter: blur(15px);
+    z-index: -1;
+    opacity: 0;
+}
+
+.contact-button:hover {
+    width: 180px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0);
+}
+
+.contact-button:hover::before {
+    opacity: 1;
+}
+
+.contact-button:hover::after {
+    opacity: 0.5;
+}
+
+.contact-button .icon {
+    color: #aeb8c4; /* Cor do ícone inicial */
+    font-size: 1.75em;
+    transition: 0.25s; /* Velocidade da animação do ícone */
+    transition-delay: 0.25s;
+    display: flex; /* Para centralizar o ícone */
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-button:hover .icon {
+    transform: scale(0);
+    color: #fff;
+    transition-delay: 0s;
+}
+
+.contact-button .title {
+    position: absolute;
+    color: #fff;
+    font-size: 1.1em;
+    font-weight: 600; /* Aumenta o peso para melhorar a legibilidade */
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5); /* Sombra para legibilidade */
+    transform: scale(0);
+    transition: 0.5s;
+    transition-delay: 0s;
+}
+
+.contact-button:hover .title {
+    transform: scale(1);
+    transition-delay: 0s; /* Texto aparece instantaneamente */
+}
+
+/* --- Responsividade --- */
+
+/* Ajustes para telas de tablet e menores (até 768px) */
+@media (max-width: 768px) {
+    /* Ajuste para as tags de competência na experiência em mobile */
+    #experiencia .experience-card .flex-wrap {
+        justify-content: flex-start !important; /* Alinha as tags à esquerda com mais especificidade */
+    }
+
+    /* Oculta o cursor brilhante em dispositivos touch para evitar que fique travado na tela */
+    .cursor-glow {
+        display: none !important;
+    }
+
+        /* Oculta o tooltip do WhatsApp em telas pequenas para não invadir a tela */
+        .whatsapp-float-anim span {
+            display: none !important;
+        }
+}
+
+/* Garante que as tags de competência não tenham altura excessiva */
+.experience-card .flex-wrap > span {
+    line-height: 1.2;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+/* ===== Efeito Fade out na Barra de Progresso ===== */
+#scroll-progress {
+    transition: width 150ms ease-out, opacity 500ms ease-out !important;
+}
+
+/* ===== Melhorias para a Seção Hero ===== */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-profile-image {
+    position: relative;
+    z-index: 10;
+    animation: profileFloat 6s ease-in-out infinite;
+}
+
+@keyframes profileFloat {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Animação de flutuação para ícones (ex: botão de download) */
+.icon-float {
+    animation: iconFloat 2s ease-in-out infinite;
+}
+
+@keyframes iconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+
+/* Animação de pulso (radar) para botões de destaque */
+.cta-pulse-anim {
+    animation: ctaPulse 2s infinite;
+}
+
+@keyframes ctaPulse {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); }
+    70% { box-shadow: 0 0 0 15px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* Animação de pulso (radar) exclusiva para o WhatsApp */
+.whatsapp-float-anim {
+    animation: whatsappPulse 2s infinite;
+}
+
+@keyframes whatsappPulse {
+    0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.6); }
+    70% { box-shadow: 0 0 0 15px rgba(37, 211, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
+}
+
+/* Typing Animation Cursor */
+.typing-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1em;
+    background-color: var(--accent-blue);
+    vertical-align: middle;
+    margin-left: 4px;
+    animation: blinkCursor 0.8s step-end infinite;
+}
+
+@keyframes blinkCursor {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* ===== Animações de Scroll ===== */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.scroll-reveal-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-reveal-left.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.scroll-reveal-right {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-reveal-right.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ===== Melhorias de Tipografia ===== */
+h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-blue-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ===== Seção de Projetos ===== */
+.project-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    background-color: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(var(--project-color-rgb, 59, 130, 246), 0.2);
+    border-color: rgba(var(--project-color-rgb, 59, 130, 246), 0.3);
+}
+
+.project-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.project-card:hover .project-image {
+    transform: scale(1.05);
+}
+
+/* ===== Melhorias no Header ===== */
+header {
+    transition: all 0.3s ease;
+}
+
+header.scrolled {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Melhorias nos Botões Sociais ===== */
+.social-btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    transform: scale(1.05);
+}
+
+/* LinkedIn Hover */
+.social-btn[style*="#56CCF2"]:hover {
+    background: linear-gradient(135deg, #0A66C2, #56CCF2);
+    box-shadow: 0 0 20px rgba(10, 102, 194, 0.5);
+}
+
+/* GitHub Hover */
+.social-btn[style*="#333"]:hover,
+.social-btn[style*="#6e5494"]:hover {
+    background: linear-gradient(135deg, #181717, #6e5494);
+    box-shadow: 0 0 20px rgba(110, 84, 148, 0.5);
+}
+
+.social-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.social-btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* ===== Melhorias na Timeline de Experiência ===== */
+.timeline-dot {
+    position: relative;
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.timeline-dot:hover {
+    transform: scale(1.3);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
+
+/* ===== Partículas de Fundo ===== */
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.particle {
+    position: absolute;
+    opacity: 0;
+    user-select: none;
+    white-space: nowrap;
+}
+
+/* ===== Partículas Abstratas de Fundo ===== */
+.abstract-particle {
+    position: absolute;
+    background-color: var(--accent-blue);
+    border-radius: 50%;
+    opacity: 0;
+    animation: floatAbstract linear infinite;
+    filter: blur(1px);
+}
+
+@keyframes floatAbstract {
+    0% {
+        transform: translateY(110vh) scale(0.8);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.15;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    90% {
+        opacity: 0.15;
+    }
+    100% {
+        transform: translateY(-10vh) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* ===== Efeito Glow no Nome ===== */
+.hover-glow-effect {
+    display: inline-block;
+}
+.hover-glow-effect:hover {
+    filter: drop-shadow(0 0 15px rgba(96, 165, 250, 0.6));
+    transform: scale(1.02);
+}
+
+/* ===== Efeito de Tilt 3D nos Cards ===== */
+.tilt-card {
+    transform-style: preserve-3d;
+    transform: perspective(1000px);
+}
+
+.tilt-card-inner {
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+}
+
+.tilt-card:hover .tilt-card-inner {
+    transform: rotateX(var(--rotate-x)) rotateY(var(--rotate-y)) scale3d(1.05, 1.05, 1.05);
+}
+
+/* ===== Cursor Personalizado com Brilho ===== */
+.cursor-glow {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.cursor-glow.active {
+    opacity: 1;
+}
+
+/* ===== Efeito de Parallax no Scroll ===== */
+.parallax-element {
+    transition: transform 0.1s ease-out;
+    will-change: transform;
+}
+
+/* ===== Micro-interações Avançadas nos Botões ===== */
+.btn-magnetic {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-magnetic:hover {
+    transform: scale(1.05);
+}
+
+/* ===== Efeito de Ripple nos Botões ===== */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: scale(0);
+    animation: ripple-animation 0.4s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ===== Efeito de Glow nos Cards ao Hover ===== */
+.experience-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.experience-card:hover::before {
+    opacity: 1;
+}
+
+.project-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(var(--project-color-rgb, 59, 130, 246), 0.15) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.project-card:hover::before {
+    opacity: 1;
+}
+
+/* ===== Animação de Texto com Efeito Neon Sutil ===== */
+.neon-text {
+    text-shadow: 
+        0 0 2px var(--accent-blue),
+        0 0 4px var(--accent-blue);
+    animation: neon-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes neon-pulse {
+    from {
+        text-shadow: 
+            0 0 2px var(--accent-blue),
+            0 0 4px var(--accent-blue);
+    }
+    to {
+        text-shadow: 
+            0 0 4px var(--accent-blue),
+            0 0 8px var(--accent-blue);
+    }
+}
+
+/* ===== Indicador de Card Clicável ===== */
+.experience-card {
+    position: relative;
+}
+
+.experience-card::after {
+    content: '→';
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-blue);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    font-weight: bold;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+}
+
+.experience-card:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.project-card {
+    position: relative;
+    text-decoration: none;
+}
+
+.project-card::after {
+    content: '→';
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-blue);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    font-weight: bold;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.project-card:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ===== Efeito de Borda Neon Animado ===== */
+.project-card,
+.academic-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.experience-card {
+    position: relative;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.experience-card:hover,
+.project-card:hover,
+.academic-card:hover {
+    transform: scale(1.02);
+}
+
+.project-card {
+    border: none;
+    background-color: var(--bg-card);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.project-card:hover {
+    border: 1px solid var(--project-color, var(--accent-blue));
+    box-shadow: 0 0 20px rgba(var(--project-color-rgb, 59, 130, 246), 0.3), 0 8px 24px rgba(var(--project-color-rgb, 59, 130, 246), 0.15);
+}
+
+.experience-card:hover {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 8px 24px rgba(59, 130, 246, 0.15);
+}
+
+@keyframes neon-border {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* ===== Efeito de Loading Animado ===== */
+.loading-shimmer {
+    background: linear-gradient(
+        90deg,
+        var(--bg-card) 0%,
+        var(--bg-card-hover) 50%,
+        var(--bg-card) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ===== Sistema de Cores Dinâmicas dos Modais (Injetadas via JS) ===== */
+#details-modal {
+    /* Cores padrão de fallback (Azul) caso o JS não carregue */
+    --dynamic-color: var(--accent-blue);
+    --dynamic-color-rgb: 59, 130, 246;
+}
+
+/* Aplica a cor inteligente na borda e no glow de fundo do modal inteiro */
+#details-modal #modal-content {
+    border-color: rgba(var(--dynamic-color-rgb), 0.3);
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.3), 0 0 25px -5px rgba(var(--dynamic-color-rgb), 0.25);
+}
+
+/* Efeito luminoso para ícones e o marcador de título */
+.dynamic-text {
+    color: var(--dynamic-color);
+    filter: drop-shadow(0 0 8px rgba(var(--dynamic-color-rgb), 0.5));
+}
+
+/* ===== Terminal QA (Dev Experience) ===== */
+.terminal-window {
+    box-shadow: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 20px rgba(59,130,246,0.1);
+}
+.log-line {
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: logFadeIn 0.3s forwards;
+    font-family: 'Courier New', Courier, monospace;
+}
+.log-cmd { color: #58a6ff; font-weight: bold; }
+.log-info { color: #8b949e; }
+.log-success { color: #3fb950; }
+.log-error { color: #ff7b72; }
+
+@keyframes logFadeIn {
+    to { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateX(-10px); }
+}
+
+/* Badges de Stack com transparência inteligente baseada na cor */
+.dynamic-badge {
+    background-color: rgba(var(--dynamic-color-rgb), 0.1);
+    color: var(--dynamic-color);
+    border: 1px solid rgba(var(--dynamic-color-rgb), 0.2);
+}
+.dark .dynamic-badge, .dark .glass-badge {
+    background-color: rgba(var(--dynamic-color-rgb, 59, 130, 246), 0.15);
+    border-color: rgba(var(--dynamic-color-rgb, 59, 130, 246), 0.3);
+    color: rgba(var(--dynamic-color-rgb, 96, 165, 250), 1);
+}
+.dynamic-badge:hover, .glass-badge:hover {
+    background-color: rgba(var(--dynamic-color-rgb), 0.2);
+    border-color: rgba(var(--dynamic-color-rgb), 0.5);
+    box-shadow: 0 0 15px rgba(var(--dynamic-color-rgb), 0.2);
+}
+
+/* Botão Principal com Glow Dinâmico */
+.dynamic-btn {
+    background-color: var(--dynamic-color);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(var(--dynamic-color-rgb), 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.dynamic-btn:hover {
+    box-shadow: 0 8px 25px rgba(var(--dynamic-color-rgb), 0.5);
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
