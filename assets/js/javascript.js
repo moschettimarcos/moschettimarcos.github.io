@@ -91,18 +91,43 @@ if (mobileMenuButton && mobileMenu && menuIcon && closeIcon) {
 
 // --- Lógica de Scroll Suave para TODOS os links âncora ---
 // Seleciona links do header (desktop E mobile) que começam com #
+
+// Enquanto o scroll suave de um clique está em andamento, o ScrollSpy (abaixo)
+// fica pausado para não "brigar" com o destaque já aplicado no clique.
+let isProgrammaticNavScroll = false;
+let programmaticScrollTimeout;
+
+function setActiveNavLink(sectionId) {
+    navLinks.forEach(link => {
+        link.classList.remove('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
+        if (link.getAttribute('href') === `#${sectionId}`) {
+            link.classList.add('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
+        }
+    });
+}
+
 document.querySelectorAll('header a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault(); // Previne o salto imediato padrão
 
         const targetId = this.getAttribute('href');
-        
+
         // O link "Contato" do topo tem href="#contato", assim como o da seção Hero.
         // O link "Home" (Logo) tem href="#home".
         if (targetId) {
             const targetElement = document.querySelector(targetId);
 
             if (targetElement) {
+                // Destaca o item do menu imediatamente, sem esperar o scroll terminar
+                if (this.classList.contains('nav-link')) {
+                    isProgrammaticNavScroll = true;
+                    clearTimeout(programmaticScrollTimeout);
+                    setActiveNavLink(targetId.slice(1));
+                    programmaticScrollTimeout = setTimeout(() => {
+                        isProgrammaticNavScroll = false;
+                    }, 1000);
+                }
+
                 // Rola suavemente até o elemento
                 targetElement.scrollIntoView({
                     behavior: 'smooth'
@@ -174,8 +199,6 @@ function openModal(title, content) {
 
     modalTitle.textContent = title;
     modalBody.innerHTML = content; // Usamos innerHTML para caso o conteúdo tenha tags
-
-        detailsModal.classList.add('qa-mode'); // Ativa o fundo de letras QA
 
     detailsModal.classList.remove('hidden');
     detailsModal.setAttribute('aria-hidden', 'false'); // Para acessibilidade
@@ -366,51 +389,15 @@ if (header) {
     });
 }
 
-// --- Criação de Partículas Abstratas de Fundo ---
-let particlesContainer;
-
-function createAbstractParticles() {
-    if (!particlesContainer) return;
-    
-    const particleCount = 20;
-
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'particle abstract-particle';
-        
-        const size = Math.random() * 8 + 4;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        
-        particle.style.left = Math.random() * 100 + 'vw';
-        
-        const duration = Math.random() * 15 + 15;
-        particle.style.animationDuration = `${duration}s`;
-        particle.style.animationDelay = `-${Math.random() * 30}s`;
-        
-        particlesContainer.appendChild(particle);
-    }
-}
-
-function initParticleSystem() {
-    if (window.innerWidth > 768) {
-        particlesContainer = document.createElement('div');
-        particlesContainer.className = 'particles';
-        document.body.appendChild(particlesContainer);
-        
-        createAbstractParticles();
-    }
-}
-
 // ===== Efeito de Digitação Animado (Typing) =====
 const typingText = document.getElementById('typing-text');
 const typingRoles = [
-    'Engenheiro de Automação',
-    'Automação com Selenium',
+    'Analista de QA',
+    'Testes Manuais & Exploratórios',
     'Automação com Cypress',
-    'Automação com Robot Framework',
-    'Arquitetura de Testes & CI/CD',
-    'Testes E2E & API'
+    'Testes de API',
+    'Automação com Selenium',
+    'BDD & Gherkin'
 ];
 let roleIndex = 0;
 let charIndex = 0;
@@ -537,6 +524,20 @@ const projectsData = {
             'Interações com Campos de Texto e Pressionamento de Teclas'
         ],
         github: 'https://github.com/moschettimarcos/the-internet-robot'
+    },
+    'playwright-framework': {
+        title: 'Playwright Automation Framework',
+        description: 'Framework de automação de testes construído com Playwright, cobrindo testes de API, E2E e regressão visual, com Page Object Model, Data-Driven Testing e pipeline de CI/CD.',
+        technologies: ['Playwright', 'JavaScript', 'Node.js', 'API Testing', 'GitHub Actions'],
+        features: [
+            'Testes de API, E2E e regressão visual em um único framework',
+            'Arquitetura baseada em Page Object Model (POM)',
+            'Data-Driven Testing com massas de dados externas',
+            'Execução multi-navegador (Chromium, Firefox e WebKit)',
+            'Pipeline de CI/CD automatizada com GitHub Actions',
+            'Relatórios HTML com traces, screenshots e vídeos de falhas'
+        ],
+        github: 'https://github.com/moschettimarcos/playwright-framework-estudo'
     }
 };
 
@@ -550,6 +551,7 @@ const frameworkThemes = {
     'python': { color: '#FACC15', rgb: '250, 204, 21', logo: 'https://cdn.simpleicons.org/python/FACC15' },
     'node': { color: '#22C55E', rgb: '34, 197, 94', logo: 'https://cdn.simpleicons.org/nodedotjs/22C55E' },
     'typescript': { color: '#3B82F6', rgb: '59, 130, 246', logo: 'https://cdn.simpleicons.org/typescript/3B82F6' },
+    'playwright': { color: '#D33833', rgb: '211, 56, 51', logo: 'https://api.iconify.design/logos:playwright.svg' },
     'default': { color: '#3B82F6', rgb: '59, 130, 246', logo: '' }
 };
 
@@ -575,68 +577,50 @@ function openProjectModal(projectId) {
     const modalTitle = document.getElementById('modal-title');
     const modalBody = document.getElementById('modal-body');
 
-    modal.classList.remove('qa-mode'); // Remove letras QA
-
     // Detecta o tema dinâmico baseado na stack e aplica no Modal
     const theme = getThemeForProject(project.technologies);
     modal.style.setProperty('--dynamic-color', theme.color);
     modal.style.setProperty('--dynamic-color-rgb', theme.rgb);
 
-    // Prepara o elemento HTML da imagem de fundo com lazy loading
-    const watermarkHtml = theme.logo ? `<img src="${theme.logo}" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 opacity-[0.03] dark:opacity-[0.08] pointer-events-none z-0" alt="Watermark" loading="lazy">` : '';
-
     const lang = getInitialLanguage();
-    // Puxa do dicionário se necessário, garantindo fallback elegante para o PT-BR
-    const techText = lang === 'en' ? 'Technologies Used' : 'Tecnologias Utilizadas';
+    const techText = lang === 'en' ? 'Technologies' : 'Tecnologias';
     const featuresText = lang === 'en' ? 'Features' : 'Funcionalidades';
     const btnText = lang === 'en' ? 'View on GitHub' : 'Ver no GitHub';
 
-    // Bug Fix: Puxa diretamente os textos do projeto (que já estão em português)
     const desc = project.description;
     const feats = project.features;
 
-    // Adiciona o título com um pequeno detalhe visual cyber (✦) puxando a cor da stack
-    modalTitle.innerHTML = `<span class="dynamic-text mr-2 opacity-80">✦</span>${project.title}`;
-    
+    modalTitle.textContent = project.title;
+
     modalBody.innerHTML = `
-        ${watermarkHtml}
-        
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[var(--dynamic-color)] to-transparent opacity-60"></div>
-        
-        <div class="relative z-10 pt-2 flex flex-col min-h-full">
+        <div class="flex flex-col">
             <p class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">${desc}</p>
-            
+
             <div class="mt-8">
-                <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
-                    <svg class="w-4 h-4 dynamic-text" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"></path><path d="m6 8-4 4 4 4"></path><path d="m14.5 4-5 16"></path></svg>
-                    ${techText}
-                </h4>
+                <h4 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3">${techText}</h4>
                 <div class="flex flex-wrap gap-2">
-                    ${project.technologies.map(tech => `<span class="px-4 py-1.5 dynamic-badge rounded-lg text-sm font-semibold transition-all duration-300 hover:scale-105 cursor-default">${tech}</span>`).join('')}
+                    ${project.technologies.map(tech => `<span class="px-3 py-1 dynamic-badge rounded-lg text-sm font-medium cursor-default">${tech}</span>`).join('')}
                 </div>
             </div>
-            
+
             <div class="mt-8">
-                <h4 class="text-xs uppercase tracking-[0.2em] font-bold text-gray-500 dark:text-gray-400 mb-4 flex items-center gap-2">
-                    <svg class="w-4 h-4 dynamic-text" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
-                    ${featuresText}
-                </h4>
-                <ul class="space-y-3">
+                <h4 class="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-3">${featuresText}</h4>
+                <ul class="space-y-2.5">
                     ${feats.map(feature => `
-                        <li class="flex items-start gap-3 p-4 rounded-xl bg-white/40 dark:bg-gray-800/40 border border-gray-200/50 dark:border-gray-700/50 hover:border-gray-300 dark:hover:border-gray-600 shadow-sm transition-all duration-300 group">
-                            <span class="dynamic-text mt-1 shrink-0 group-hover:scale-110 transition-transform">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
+                        <li class="flex items-start gap-2.5 text-gray-700 dark:text-gray-300">
+                            <span class="dynamic-text mt-1 shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                             </span>
-                            <span class="text-gray-800 dark:text-gray-300 font-medium">${feature}</span>
+                            <span>${feature}</span>
                         </li>
                     `).join('')}
                 </ul>
             </div>
-            
-            <div class="mt-auto pt-10 flex justify-end">
-                <a href="${project.github}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-8 py-3 dynamic-btn rounded-xl font-bold tracking-wide group">
+
+            <div class="mt-8">
+                <a href="${project.github}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-6 py-2.5 dynamic-btn rounded-lg font-semibold">
                     <span>${btnText}</span>
-                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
+                    <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14 21 3"></path><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path></svg>
                 </a>
             </div>
         </div>
@@ -690,17 +674,15 @@ function closeModal() {
 // ===== Simulador de Terminal (Pipeline QA) =====
 const terminalOutput = document.getElementById('terminal-output');
 const terminalLogs = [
-    { type: 'cmd', text: '$ npm run cy:e2e-suite' },
-    { type: 'info', text: '> Inicializando Cypress Test Runner...' },
-    { type: 'info', text: '> Iniciando navegador headless (Electron 114)...' },
-    { type: 'success', text: '✓ [PASS] Fluxo de Autenticação de Usuário (1.2s)' },
-    { type: 'success', text: '✓ [PASS] Integração com Gateway de Pagamento (2.4s)' },
-    { type: 'error', text: '✗ [FAIL] Timeout na Resposta da API Mock (5.0s)' },
-    { type: 'info', text: '> Retentando teste falho 1/2...' },
-    { type: 'success', text: '✓ [PASS] Resposta da API Mock [RETRY SUCESSO] (1.1s)' },
-    { type: 'info', text: '> Gerando Relatório HTML com Mochawesome...' },
-    { type: 'success', text: '✨ Todos os 142 testes passaram com sucesso!' },
-    { type: 'cmd', text: '$ echo "Pronto para Deploy 🚀"' }
+    { type: 'cmd', text: '$ npm test' },
+    { type: 'info', text: '> Iniciando execução dos testes...' },
+    { type: 'success', text: '✓ [PASS] Validação de contrato da API (0.6s)' },
+    { type: 'success', text: '✓ [PASS] Fluxo de autenticação (0.8s)' },
+    { type: 'success', text: '✓ [PASS] Testes de regressão (1.2s)' },
+    { type: 'success', text: '✓ [PASS] Validação de schema (0.9s)' },
+    { type: 'info', text: '> Gerando relatório de execução...' },
+    { type: 'success', text: '✓ Suíte concluída com sucesso' },
+    { type: 'cmd', text: '$ echo "Pronto para revisão"' }
 ];
 let logIndex = 0;
 let terminalStarted = false;
@@ -731,61 +713,6 @@ function printTerminalLog() {
     const delay = log.type === 'cmd' ? 800 : (Math.random() * 400 + 100);
     setTimeout(printTerminalLog, delay);
 }
-
-// Inicia o sistema de gamificação em telas maiores
-initParticleSystem();
-
-// ===== Efeito de Cursor Glow =====
-const cursorGlow = document.createElement('div');
-cursorGlow.className = 'cursor-glow';
-document.body.appendChild(cursorGlow);
-
-document.addEventListener('mousemove', (e) => {
-    if (window.innerWidth <= 768) return; // Otimização mobile: não processa eventos de mouse em telas touch
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
-    cursorGlow.classList.add('active');
-});
-
-document.addEventListener('mouseleave', () => {
-    cursorGlow.classList.remove('active');
-});
-
-// ===== Efeito de Tilt 3D nos Cards =====
-const tiltCards = document.querySelectorAll('.project-card, .experience-card, .academic-card');
-
-tiltCards.forEach(card => {
-    let isTilting = false;
-    card.addEventListener('mousemove', (e) => {
-        if (window.innerWidth <= 768) return; // Otimização mobile: ignora cálculos 3D pesados
-
-        if (!isTilting) {
-            window.requestAnimationFrame(() => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = (y - centerY) / 10;
-                const rotateY = (centerX - x) / 10;
-                
-                card.style.setProperty('--rotate-x', `${-rotateX}deg`);
-                card.style.setProperty('--rotate-y', `${rotateY}deg`);
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-                isTilting = false;
-            });
-            isTilting = true;
-        }
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        card.style.setProperty('--rotate-x', '0deg');
-        card.style.setProperty('--rotate-y', '0deg');
-    });
-});
 
 // ===== Barra de Progresso de Leitura (Scroll) =====
 const scrollProgress = document.getElementById('scroll-progress');
@@ -837,37 +764,25 @@ buttons.forEach(button => {
     });
 });
 
-// ===== Efeito Fade-in para as Imagens dos Projetos =====
-document.querySelectorAll('.project-image').forEach(img => {
-    if (img.complete) {
-        img.classList.add('loaded');
-    } else {
-        img.addEventListener('load', () => img.classList.add('loaded'));
-    }
-});
-
 // ===== ScrollSpy (Detecção de Rolagem no Menu Ativo) =====
 const sectionsSpy = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-link');
 
 window.addEventListener('scroll', () => {
+    // Enquanto um clique no menu ainda está com o scroll suave em andamento,
+    // o destaque já foi aplicado instantaneamente — não deixa o ScrollSpy sobrescrever.
+    if (isProgrammaticNavScroll) return;
+
     let current = '';
     // Descobre qual seção está na tela
     sectionsSpy.forEach(section => {
         const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
         if (scrollY >= (sectionTop - 250)) { // 250px de margem pelo header
             current = section.getAttribute('id');
         }
     });
 
-    // Atualiza os links do menu com classes do Tailwind
-    navLinks.forEach(link => {
-        link.classList.remove('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
-        }
-    });
+    setActiveNavLink(current);
 });
 
 // --- Lógica do Botão "Ver Mais" nos Certificados ---
@@ -957,11 +872,11 @@ const i18nDictionary = {
         'mobile_lang_text': 'Mudar para English',
 
         // Page translations (Full Page)
-        'about_card_desc': 'Garantindo excelência em cada entrega',
+        'about_card_desc': 'Achando o que quebra antes do usuário',
         'about_title': 'Sobre Mim',
-        'about_p1': 'Atuo há mais de 6 anos na área de Quality Assurance, com foco em elevar o padrão de entrega de software através de automação inteligente e processos ágeis. Tenho experiência sólida na construção de cenários E2E, validação de APIs e testes Mobile, buscando sempre a máxima confiabilidade do produto.',
-        'about_p2': 'Para mim, qualidade não é apenas encontrar bugs no final, mas prevenir falhas desde a concepção do projeto. Por isso, valorizo a colaboração contínua com desenvolvedores, product owners e designers para construir soluções que realmente agreguem valor aos usuários.',
-        'about_p3': 'Fora do ambiente corporativo, sou entusiasta de videogames, música (guitarra e violão) e ciclismo. Acredito que cultivar esses hobbies é essencial para manter o foco, a criatividade e a capacidade de resolução de problemas sempre em alta.',
+        'about_p1': 'Trabalho com qualidade de software há mais de 6 anos, passando por fintech, consultoria e produto. Ao longo desse tempo já testei de tudo um pouco — front-end, API, banco de dados, apps mobile, integrações com Salesforce e até arquivos bancários no padrão CNAB — sempre me adaptando ao que o produto e o time pedem no momento.',
+        'about_p2': 'Gosto de automatizar o que realmente vale a pena automatizar, mas sei que boa parte do trabalho de QA acontece fora da ferramenta: entender bem o requisito, questionar cedo e cobrir os casos que ninguém pensou. Estou cursando um MBA em Engenharia de Software pela USP/Esalq pra enxergar melhor o lado de quem decide o que construir, não só o de quem testa.',
+        'about_p3': 'Fora do trabalho, toco violão e guitarra, jogo bastante e ando de bicicleta.',
         'skills_title': 'Principais Competências',
         'skills_cat1': 'Testes e QA',
         'skills_cat2': 'Ferramentas',
@@ -969,24 +884,33 @@ const i18nDictionary = {
         'exp_title': 'Experiência Profissional',
         'exp_subtitle': '6+ anos atuando em qualidade de software',
         'exp_current': 'Atual',
-        'exp_finnet_time': 'abr de 2024 - o momento',
-        'exp_finnet_role': 'Analista de Testes',
+        'exp_obj_time': 'jun de 2026 - o momento',
+        'exp_obj_role': 'Analista de Teste/QA',
+        'exp_obj_loc': 'Objective · Remota',
+        'exp_obj_b1': '• Testes manuais funcionais e exploratórios de front-end, validando fluxo, usabilidade e consistência visual',
+        'exp_obj_b2': '• Testes de API para validar contratos, respostas e integridade dos serviços',
+        'exp_obj_b3': '• Conferência de dados em banco de dados para garantir consistência entre aplicação e persistência',
+        'exp_obj_b4': '• Monitoramento de aplicações em produção com Datadog para diagnóstico de falhas',
+        'exp_obj_modal_title': 'Analista de Teste/QA na Objective',
+        'exp_obj_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Testes manuais de front-end:</h4><ul class='list-disc list-inside space-y-2'><li>Testes manuais funcionais e exploratórios de front-end, cobrindo fluxo, usabilidade, responsividade e consistência visual antes de cada entrega.</li><li>Validação de API — contrato, resposta e integridade dos dados por trás da tela.</li><li>Conferência de dados em banco de dados quando o que aparece na tela não bate com o que deveria estar persistido.</li><li>Levantamento de requisitos junto ao time para entender o comportamento esperado antes de desenhar os casos de teste.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Observabilidade e colaboração:</h4><ul class='list-disc list-inside space-y-2'><li>Monitoramento e investigação de comportamento de aplicações em produção com <strong>Datadog</strong>, rastreando a origem de falhas antes que virem um problema maior.</li><li>Contato direto com o time de desenvolvimento ao longo do ciclo, resolvendo boa parte das questões em conversa em vez de só via bug report formal.</li></ul>",
+        'exp_finnet_time': 'abr de 2024 - jun de 2026',
+        'exp_finnet_role': 'Analista de Teste/QA',
         'exp_finnet_loc': 'Finnet · Híbrida',
-        'exp_finnet_b1': 'Forte atuação na execução de testes manuais, exploratórios e de regressão em produtos de mapas customizados (CNAB).',
-        'exp_finnet_b2': 'Escrita de cenários em BDD (Gherkin), documentação de evidências, métricas de qualidade e tracking de bugs no Jira.',
-        'exp_finnet_b3': 'Automação de testes E2E com Cypress e validação da integração de APIs REST utilizando Postman.',
-        'exp_finnet_b4': 'Integração contínua das suítes de teste em pipelines CI/CD via GitLab, com provisionamento de ambientes QA em Docker.',
-        'exp_finnet_modal_title': 'Analista de Testes na Finnet',
-        'exp_finnet_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Testes Manuais e Qualidade:</h4><ul class='list-disc list-inside space-y-2'><li>Forte atuação na execução de testes manuais funcionais e exploratórios em produtos de mapas customizados (padrão CNAB).</li><li>Elaboração de planos de teste, especificação de cenários complexos e documentação estruturada de evidências para garantir a rastreabilidade das validações.</li><li>Abertura, triagem e acompanhamento ponta a ponta do ciclo de vida de bugs no <strong>Jira</strong>, validando as correções desde o reporte até a resolução final.</li><li>Definição e monitoramento de métricas de qualidade alinhadas às Sprints, com participação ativa nas cerimônias Scrum.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Automação e Ferramentas:</h4><ul class='list-disc list-inside space-y-2'><li>Execução de testes de API com <strong>Postman</strong> para validar a comunicação e a integridade dos serviços.</li><li>Desenvolvimento e manutenção de testes automatizados E2E com <strong>Cypress</strong> (BDD), focados em otimizar as suítes de regressão.</li><li>Gerenciamento de ambientes de teste isolados com <strong>Docker</strong> e controle de versão de testes utilizando <strong>GitLab</strong>.</li></ul>",
+        'exp_finnet_b1': '• Testes manuais de produtos de mapas customizados (CNAB), com planos de teste e cenários documentados',
+        'exp_finnet_b2': '• Testes de API com Postman e automação de regressão em Cypress (BDD)',
+        'exp_finnet_b3': '• Gestão do ciclo de vida de bugs no Jira e acompanhamento de métricas de qualidade por sprint',
+        'exp_finnet_b4': '• Ambientes de teste isolados com Docker e versionamento via GitLab',
+        'exp_finnet_modal_title': 'Analista de Teste/QA na Finnet',
+        'exp_finnet_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Testes manuais e qualidade:</h4><ul class='list-disc list-inside space-y-2'><li>Testes manuais dos arquivos de mapas customizados no padrão <strong>CNAB</strong> — validação minuciosa, já que qualquer erro impedia o banco de processar o arquivo.</li><li>Elaboração de planos de teste e especificação de cenários complexos, com documentação estruturada de evidências para garantir a rastreabilidade das validações.</li><li>Definição e acompanhamento de métricas de qualidade sprint a sprint, com participação ativa nas cerimônias de Scrum.</li><li>Gestão do ciclo de vida dos bugs no <strong>Jira</strong>, do reporte à confirmação da correção junto ao time responsável.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Automação e ferramentas:</h4><ul class='list-disc list-inside space-y-2'><li>Testes de integração via API com <strong>Postman</strong> antes de cada entrega.</li><li>Automação de parte da regressão em <strong>Cypress</strong> com <strong>BDD</strong>, padronizando os testes ao longo do ciclo de desenvolvimento e identificando quebras antes de virarem incidente.</li><li>Ambientes de teste isolados e replicáveis com <strong>Docker</strong>, com controle de versão e integração contínua via <strong>GitLab</strong>.</li></ul>",
         'exp_fr_time': 'fev de 2020 - fev de 2024',
         'exp_fr_role': 'Analista de Qualidade Pleno',
         'exp_fr_loc': 'FR Consulting · Remota',
-        'exp_fr_b1': 'Condução de testes funcionais, exploratórios e de usabilidade em aplicações Mobile (Android/iOS) e na plataforma Salesforce.',
-        'exp_fr_b2': 'Especificação de cenários BDD, homologação de requisitos, documentação de evidências e gestão do ciclo de bugs no Jira.',
-        'exp_fr_b3': 'Validação robusta de backend através de testes de serviços com Postman/Swagger e desenvolvimento de queries SQL e DB2.',
-        'exp_fr_b4': 'Criação de dashboards de qualidade e suporte técnico na administração de ambientes QA no ecossistema Salesforce.',
+        'exp_fr_b1': '• Testes manuais funcionais, de layout e stress em apps Mobile (Android/iOS) e validações no Salesforce',
+        'exp_fr_b2': '• Cenários BDD, testes de API (Postman/Swagger) e consultas SQL/DB2 para validação de dados',
+        'exp_fr_b3': '• Gestão do ciclo de bugs no Jira e simulações em ambientes de homologação e produção',
+        'exp_fr_b4': '• Administração do Salesforce e criação de dashboards de qualidade',
         'exp_fr_modal_title': 'Analista de Qualidade Pleno na FR Consulting',
-        'exp_fr_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Testes Mobile e API:</h4><ul class='list-disc list-inside space-y-2'><li>Condução de ciclos completos de testes manuais e funcionais em aplicativos móveis (Android e iOS), cobrindo usabilidade, layout e stress.</li><li>Especificação de cenários de teste utilizando <strong>Gherkin</strong> (BDD), com foco na documentação de evidências claras e estruturadas.</li><li>Identificação, abertura e acompanhamento de bugs no <strong>Jira</strong>, interagindo com os desenvolvedores até a confirmação da correção.</li><li>Execução de testes de API REST com <strong>Postman</strong> e <strong>Swagger</strong>.</li><li>Desenvolvimento de consultas em <strong>SQL</strong> e <strong>DB2</strong> para realizar validações de dados complexas e garantir a consistência da base.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Plataforma Salesforce:</h4><ul class='list-disc list-inside space-y-2'><li>Levantamento de escopo, especificação de ambiente e validação de objetos e customizações na plataforma <strong>Salesforce</strong>.</li><li>Administração completa: criação de objetos, leads, contratos, campos, perfis de acesso e parametrizações do sistema.</li><li>Atuação em projetos de sustentação, suporte contínuo e geração de relatórios/dashboards para análise de dados.</li></ul>",
+        'exp_fr_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Mobile e API:</h4><ul class='list-disc list-inside space-y-2'><li>Testes manuais completos em apps Android e iOS — funcionais, de layout, usabilidade e stress, cobrindo os casos que só aparecem depois que o usuário reclama.</li><li>Análise de requisitos e escrita de cenários em <strong>Gherkin</strong> (BDD) antes da execução, alinhando o time sobre o que estava sendo validado.</li><li>Testes de API REST com <strong>Postman</strong> e <strong>Swagger</strong>, com validações diretas no banco (<strong>SQL</strong> / <strong>DB2</strong>) quando necessário.</li><li>Gestão do ciclo de bugs no <strong>Jira</strong> do início ao fim, com feedback detalhado ao time de desenvolvimento até a confirmação da correção.</li><li>Simulações de teste em ambientes de homologação, pré-produção e produção, com evidências documentadas para análise.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Plataforma Salesforce:</h4><ul class='list-disc list-inside space-y-2'><li>Levantamento de escopo, especificação de ambiente e validação de objetos, campos e regras de negócio na plataforma <strong>Salesforce</strong>.</li><li>Administração completa: criação de objetos, leads, contratos, campos e perfis de acesso.</li><li>Suporte contínuo em projetos de sustentação, com identificação de oportunidades de melhoria e criação de relatórios e dashboards para o time.</li></ul>",
         'proj_title': 'Projetos',
         'proj_subtitle': 'Automação de testes e qualidade de software.',
         'proj1_desc': 'Automação de testes de API com Cypress. Abordagem moderna e escalável.',
@@ -994,11 +918,12 @@ const i18nDictionary = {
         'proj3_desc': 'Sistema em Java para gestão de concessionária. CRUD completo com persistência de dados.',
         'proj4_desc': 'Testes avançados de UI em Java abordando Shadow DOM, iFrames e Ajax.',
         'proj5_desc': 'Automação com Robot Framework e Selenium. Keywords reutilizáveis e CI/CD.',
+        'proj6_desc': 'Framework de automação com Playwright. Testes de API, E2E e visuais com POM e CI/CD.',
         'proj_github': 'Ver no GitHub',
         'edu_title': 'Formação e Certificados',
         'edu_subtitle': 'Educação contínua em qualidade de software',
         'edu_academic_title': 'Formação Acadêmica',
-        'edu_mba_status': 'Previsto',
+        'edu_mba_status': 'Em andamento',
         'edu_mba_name': 'MBA em Engenharia de Software',
         'edu_mba_date': 'Início: out de 2025 | Conclusão: mai de 2027',
         'edu_mba_modal_title': 'MBA em Engenharia de Software',
@@ -1008,15 +933,14 @@ const i18nDictionary = {
         'edu_grad_modal_title': 'Análise e Desenvolvimento de Sistemas',
         'edu_grad_modal_details': 'Graduação em Análise e Desenvolvimento de Sistemas pela UNINOVE, onde adquiri uma base sólida em lógica de programação, banco de dados, desenvolvimento web e mobile, e análise de requisitos, preparando-me para atuar no ciclo completo de desenvolvimento de software.',
         'edu_certs_title': 'Certificados',
-        'cert_btn_show': 'Ver todos os 21 certificados',
+        'cert_btn_show': 'Ver todos os 22 certificados',
         'cert_btn_hide': 'Ver menos',
         'contact_title': 'Contato',
         'contact_subtitle': 'Aberto a oportunidades e discussões sobre tecnologia e qualidade de software.',
-        'stat_1': 'Testes Automatizados',
-        'stat_2': 'Cenários Mapeados',
+        'stat_1': 'Certificações',
+        'stat_2': 'Empresas',
         'stat_3': 'Anos de Experiência',
-        'stat_4': 'Qualidade Garantida',
-        'footer_text': 'Criado com HTML, Tailwind CSS e ❤️'
+        'stat_4': 'Frameworks de Automação'
     },
     'en': {
         // Header Menu
@@ -1038,36 +962,45 @@ const i18nDictionary = {
         'mobile_lang_text': 'Change to Português',
 
         // Page translations (Full Page)
-        'about_card_desc': 'Ensuring excellence in every delivery',
+        'about_card_desc': "Finding what breaks before the user does",
         'about_title': 'About Me',
-        'about_p1': 'I have over 6 years of experience in Quality Assurance, focusing on raising the standard of software delivery through intelligent automation and agile processes. I have solid experience in building E2E scenarios, API validation, and Mobile testing, always striving for maximum product reliability.',
-        'about_p2': 'For me, quality is not just finding bugs at the end, but preventing failures from the project\'s conception. That\'s why I value continuous collaboration with developers, product owners, and designers to build solutions that truly add value to users.',
-        'about_p3': 'Outside the corporate environment, I am a video game enthusiast, musician (guitar and acoustic), and cyclist. I believe cultivating these hobbies is essential to keep focus, creativity, and problem-solving skills sharp.',
+        'about_p1': "I've worked in software quality for over 6 years, across fintech, consulting, and product companies. Along the way I've tested a bit of everything — front-end, APIs, databases, mobile apps, Salesforce integrations, and even bank file formats like CNAB — always adapting to what the product and team need at the time.",
+        'about_p2': "I like automating what's actually worth automating, but I know a good part of QA work happens outside the tooling: understanding the requirement well, asking questions early, and covering the cases nobody thought of. I'm currently pursuing an MBA in Software Engineering at USP/Esalq to better understand the side of the table that decides what gets built.",
+        'about_p3': "Outside of work, I play guitar, game a fair amount, and ride my bike.",
         'skills_title': 'Core Competencies',
         'skills_cat1': 'Testing & QA',
         'skills_cat2': 'Tools',
         'skills_cat3': 'Methodologies & Languages',
         'exp_title': 'Professional Experience',
         'exp_subtitle': '6+ years working in software quality',
-        'exp_current': 'Present',
-        'exp_finnet_time': 'Apr 2024 - Present',
-        'exp_finnet_role': 'QA Tester',
+        'exp_current': 'Current',
+        'exp_obj_time': 'Jun 2026 - Present',
+        'exp_obj_role': 'QA Test Analyst',
+        'exp_obj_loc': 'Objective · Remote',
+        'exp_obj_b1': '• Manual functional and exploratory front-end testing, validating flow, usability, and visual consistency',
+        'exp_obj_b2': '• API testing to validate contracts, responses, and service integrity',
+        'exp_obj_b3': '• Database checks to ensure consistency between the application and persisted data',
+        'exp_obj_b4': '• Monitoring production applications with Datadog for failure diagnosis',
+        'exp_obj_modal_title': 'QA Test Analyst at Objective',
+        'exp_obj_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Manual front-end testing:</h4><ul class='list-disc list-inside space-y-2'><li>Manual functional and exploratory front-end testing, covering flow, usability, responsiveness, and visual consistency before every release.</li><li>API validation — contract, response, and data integrity behind the screen.</li><li>Database checks when what's shown on screen doesn't match what should be persisted.</li><li>Requirements gathering with the team to understand expected behavior before designing test cases.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Observability & collaboration:</h4><ul class='list-disc list-inside space-y-2'><li>Monitoring and investigating application behavior in production with <strong>Datadog</strong>, tracing the root cause of failures before they become bigger problems.</li><li>Direct contact with the development team throughout the cycle, resolving most issues in conversation rather than only through formal bug reports.</li></ul>",
+        'exp_finnet_time': 'Apr 2024 - Jun 2026',
+        'exp_finnet_role': 'QA Test Analyst',
         'exp_finnet_loc': 'Finnet · Hybrid',
-        'exp_finnet_b1': 'Strong background executing manual, exploratory, and regression testing on custom map products (CNAB).',
-        'exp_finnet_b2': 'BDD (Gherkin) scenario writing, evidence documentation, quality metrics, and bug tracking in Jira.',
-        'exp_finnet_b3': 'E2E test automation with Cypress and REST API integration validation using Postman.',
-        'exp_finnet_b4': 'Continuous integration of test suites into CI/CD pipelines via GitLab, provisioning QA environments with Docker.',
-        'exp_finnet_modal_title': 'QA Tester at Finnet',
-        'exp_finnet_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Manual Testing & Quality:</h4><ul class='list-disc list-inside space-y-2'><li>Strong execution of functional and exploratory manual tests on custom map products (CNAB standard).</li><li>Drafting test plans, specifying complex scenarios, and structured documentation of evidence to ensure traceability.</li><li>Opening, triaging, and end-to-end tracking of bugs in <strong>Jira</strong>, validating fixes from report to final resolution.</li><li>Definition and monitoring of quality metrics aligned with Sprints, actively participating in Scrum ceremonies.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Automation & Tools:</h4><ul class='list-disc list-inside space-y-2'><li>Execution of API tests with <strong>Postman</strong> to validate communication and service integrity.</li><li>Development and maintenance of automated E2E tests with <strong>Cypress</strong> (BDD), focused on optimizing regression suites.</li><li>Management of isolated test environments with <strong>Docker</strong> and test version control using <strong>GitLab</strong>.</li></ul>",
+        'exp_finnet_b1': '• Manual testing of custom map products (CNAB), with documented test plans and scenarios',
+        'exp_finnet_b2': '• API testing with Postman and regression automation in Cypress (BDD)',
+        'exp_finnet_b3': '• Bug lifecycle management in Jira and sprint-level quality metrics tracking',
+        'exp_finnet_b4': '• Isolated test environments with Docker and version control via GitLab',
+        'exp_finnet_modal_title': 'QA Test Analyst at Finnet',
+        'exp_finnet_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Manual testing & quality:</h4><ul class='list-disc list-inside space-y-2'><li>Manual testing of custom map files in the <strong>CNAB</strong> standard — meticulous validation, since any error would keep the bank from processing the file.</li><li>Drafting test plans and specifying complex scenarios, with structured evidence documentation to ensure traceability of validations.</li><li>Defining and tracking quality metrics sprint over sprint, actively participating in Scrum ceremonies.</li><li>Managing the bug lifecycle in <strong>Jira</strong>, from report to confirmed fix with the responsible team.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Automation & tools:</h4><ul class='list-disc list-inside space-y-2'><li>API integration testing with <strong>Postman</strong> before every release.</li><li>Automating part of the regression suite in <strong>Cypress</strong> with <strong>BDD</strong>, standardizing tests throughout the development cycle and catching breaks before they became incidents.</li><li>Isolated, reproducible test environments with <strong>Docker</strong>, with version control and continuous integration via <strong>GitLab</strong>.</li></ul>",
         'exp_fr_time': 'Feb 2020 - Feb 2024',
         'exp_fr_role': 'Mid-level QA Analyst',
         'exp_fr_loc': 'FR Consulting · Remote',
-        'exp_fr_b1': 'Conducted functional, exploratory, and usability testing on Mobile apps (Android/iOS) and the Salesforce platform.',
-        'exp_fr_b2': 'BDD scenario specification, requirements validation, evidence documentation, and bug lifecycle management in Jira.',
-        'exp_fr_b3': 'Robust backend validation through service testing with Postman/Swagger and SQL/DB2 query development.',
-        'exp_fr_b4': 'Creation of quality dashboards and technical support in QA environment administration within the Salesforce ecosystem.',
+        'exp_fr_b1': '• Manual functional, layout, and stress testing on Mobile apps (Android/iOS) and Salesforce validations',
+        'exp_fr_b2': '• BDD scenarios, API testing (Postman/Swagger), and SQL/DB2 queries for data validation',
+        'exp_fr_b3': '• Bug lifecycle management in Jira and testing simulations in staging and production environments',
+        'exp_fr_b4': '• Salesforce administration and quality dashboard creation',
         'exp_fr_modal_title': 'Mid-level QA Analyst at FR Consulting',
-        'exp_fr_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Mobile & API Testing:</h4><ul class='list-disc list-inside space-y-2'><li>Conducted full manual and functional testing cycles on mobile apps (Android and iOS), covering usability, layout, and stress.</li><li>Specification of test scenarios using <strong>Gherkin</strong> (BDD), focusing on clear and structured evidence documentation.</li><li>Identification, reporting, and tracking of bugs in <strong>Jira</strong>, interacting with developers until fix confirmation.</li><li>Execution of REST API testing with <strong>Postman</strong> and <strong>Swagger</strong>.</li><li>Development of queries in <strong>SQL</strong> and <strong>DB2</strong> to perform complex data validations and ensure database consistency.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Salesforce Platform:</h4><ul class='list-disc list-inside space-y-2'><li>Scope gathering, environment specification, and validation of objects and customizations on the <strong>Salesforce</strong> platform.</li><li>Complete administration: creation of objects, leads, contracts, fields, access profiles, and system parameterizations.</li><li>Worked on support projects, continuous maintenance, and generated reports/dashboards for data analysis.</li></ul>",
+        'exp_fr_modal_details': "<h4 class='text-lg font-semibold text-blue-300 mb-2'>Mobile & API:</h4><ul class='list-disc list-inside space-y-2'><li>Full manual testing on Android and iOS apps — functional, layout, usability, and stress, covering the edge cases that only show up after users complain.</li><li>Requirements analysis and writing <strong>Gherkin</strong> (BDD) scenarios before execution, aligning the team on what was being validated.</li><li>REST API testing with <strong>Postman</strong> and <strong>Swagger</strong>, with direct database validation (<strong>SQL</strong> / <strong>DB2</strong>) when needed.</li><li>End-to-end bug lifecycle management in <strong>Jira</strong>, with detailed feedback to the development team through fix confirmation.</li><li>Test simulations across staging, pre-production, and production environments, with documented evidence for analysis.</li></ul><h4 class='text-lg font-semibold text-blue-300 mt-4 mb-2'>Salesforce Platform:</h4><ul class='list-disc list-inside space-y-2'><li>Scope gathering, environment specification, and validation of objects, fields, and business rules on the <strong>Salesforce</strong> platform.</li><li>Full administration: creating objects, leads, contracts, fields, and access profiles.</li><li>Ongoing support on maintenance projects, identifying improvement opportunities and building reports and dashboards for the team.</li></ul>",
         'proj_title': 'Projects',
         'proj_subtitle': 'Test automation and software quality.',
         'proj1_desc': 'API test automation with Cypress. Modern and scalable approach.',
@@ -1075,11 +1008,12 @@ const i18nDictionary = {
         'proj3_desc': 'Dealership management system in Java. Full CRUD with data persistence.',
         'proj4_desc': 'Advanced UI testing in Java covering Shadow DOM, iFrames, and Ajax.',
         'proj5_desc': 'Automation with Robot Framework and Selenium. Reusable keywords and CI/CD.',
+        'proj6_desc': 'Automation framework with Playwright. API, E2E, and visual testing with POM and CI/CD.',
         'proj_github': 'View on GitHub',
         'edu_title': 'Education & Certifications',
         'edu_subtitle': 'Continuous education in software quality',
         'edu_academic_title': 'Academic Background',
-        'edu_mba_status': 'Expected',
+        'edu_mba_status': 'In progress',
         'edu_mba_name': 'MBA in Software Engineering',
         'edu_mba_date': 'Start: Oct 2025 | Completion: May 2027',
         'edu_mba_modal_title': 'MBA in Software Engineering',
@@ -1089,19 +1023,20 @@ const i18nDictionary = {
         'edu_grad_modal_title': 'Systems Analysis and Development',
         'edu_grad_modal_details': 'Degree in Systems Analysis and Development from UNINOVE, where I acquired a solid foundation in programming logic, databases, web and mobile development, and requirements analysis, preparing me to work across the full software development lifecycle.',
         'edu_certs_title': 'Certifications',
-        'cert_btn_show': 'View all 21 certifications',
+        'cert_btn_show': 'View all 22 certifications',
         'cert_btn_hide': 'Show less',
         'contact_title': 'Contact',
         'contact_subtitle': 'Open to opportunities and discussions about technology and software quality.',
-        'stat_1': 'Automated Tests',
-        'stat_2': 'Mapped Scenarios',
+        'stat_1': 'Certifications',
+        'stat_2': 'Companies',
         'stat_3': 'Years of Experience',
-        'stat_4': 'Quality Ensured',
-        'footer_text': 'Created with HTML, Tailwind CSS and ❤️'
+        'stat_4': 'Automation Frameworks'
     }
 };
 
 function getInitialLanguage() {
+    const savedLang = localStorage.getItem('lang');
+    if (savedLang === 'pt' || savedLang === 'en') return savedLang;
     const browserLang = navigator.language || navigator.userLanguage;
     return browserLang.toLowerCase().startsWith('pt') ? 'pt' : 'en';
 }
@@ -1110,7 +1045,8 @@ let currentLang = getInitialLanguage();
 
 function updateLanguage(lang) {
     currentLang = lang;
-    
+    document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-br' : 'en');
+
     // Atualiza os textos no HTML baseados no data-i18n
     document.querySelectorAll('[data-i18n]').forEach(element => {
         const key = element.getAttribute('data-i18n');
@@ -1144,6 +1080,17 @@ function updateLanguage(lang) {
     if (flagIconMobile) flagIconMobile.textContent = flag;
     if (langTextMobile) langTextMobile.textContent = i18nDictionary[lang]['mobile_lang_text'];
 }
+
+function toggleLanguage() {
+    const newLang = currentLang === 'pt' ? 'en' : 'pt';
+    localStorage.setItem('lang', newLang);
+    updateLanguage(newLang);
+}
+
+const langToggleBtn = document.getElementById('lang-toggle');
+const langToggleMobileBtn = document.getElementById('lang-toggle-mobile');
+if (langToggleBtn) langToggleBtn.addEventListener('click', toggleLanguage);
+if (langToggleMobileBtn) langToggleMobileBtn.addEventListener('click', toggleLanguage);
 
 // Aplica o idioma salvo na inicialização
 document.addEventListener('DOMContentLoaded', () => {
