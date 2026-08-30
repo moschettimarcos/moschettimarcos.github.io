@@ -160,7 +160,7 @@ if (backToTopButton) {
         }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     backToTopButton.addEventListener('click', () => {
         window.scrollTo({
@@ -380,13 +380,15 @@ scrollRevealElements.forEach(el => {
 const header = document.querySelector('header');
 
 if (header) {
+    let isHeaderScrolling = false;
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
+        if (isHeaderScrolling) return;
+        window.requestAnimationFrame(() => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+            isHeaderScrolling = false;
+        });
+        isHeaderScrolling = true;
+    }, { passive: true });
 }
 
 // ===== Efeito de Digitação Animado (Typing) =====
@@ -659,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!modal.classList.contains('hidden')) {
             closeModal();
         }
-    });
+    }, { passive: true });
 });
 
 function closeModal() {
@@ -740,7 +742,7 @@ if (scrollProgress) {
         scrollTimeout = setTimeout(() => {
             scrollProgress.style.opacity = '0';
         }, 1200);
-    });
+    }, { passive: true });
 }
 
 // ===== Efeito de Ripple nos Botões =====
@@ -768,22 +770,27 @@ buttons.forEach(button => {
 const sectionsSpy = document.querySelectorAll('section[id]');
 const navLinks = document.querySelectorAll('.nav-link');
 
+let isSpyScrolling = false;
 window.addEventListener('scroll', () => {
     // Enquanto um clique no menu ainda está com o scroll suave em andamento,
     // o destaque já foi aplicado instantaneamente — não deixa o ScrollSpy sobrescrever.
-    if (isProgrammaticNavScroll) return;
+    if (isProgrammaticNavScroll || isSpyScrolling) return;
 
-    let current = '';
-    // Descobre qual seção está na tela
-    sectionsSpy.forEach(section => {
-        const sectionTop = section.offsetTop;
-        if (scrollY >= (sectionTop - 250)) { // 250px de margem pelo header
-            current = section.getAttribute('id');
-        }
+    window.requestAnimationFrame(() => {
+        let current = '';
+        // Descobre qual seção está na tela
+        sectionsSpy.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (scrollY >= (sectionTop - 250)) { // 250px de margem pelo header
+                current = section.getAttribute('id');
+            }
+        });
+
+        setActiveNavLink(current);
+        isSpyScrolling = false;
     });
-
-    setActiveNavLink(current);
-});
+    isSpyScrolling = true;
+}, { passive: true });
 
 // --- Lógica do Botão "Ver Mais" nos Certificados ---
 const certificatesGrid = document.getElementById('certificates-grid');
