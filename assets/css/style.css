@@ -138,10 +138,10 @@ section {
 }
 
 /* Efeito Glassmorphism para os cards de Formação */
+/* Importante: manter o mesmo valor de blur do estado normal — transicionar
+   backdrop-filter entre valores diferentes causa um "flash" no navegador. */
 .academic-card:hover {
     background-color: var(--bg-card-hover);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--accent-blue);
     box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
 }
