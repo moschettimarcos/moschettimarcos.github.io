@@ -700,6 +700,34 @@ function openProjectModal(projectId) {
     }, 10);
 }
 
+// ===== Filtro de tecnologia dos Projetos =====
+const projectFilterBar = document.getElementById('project-filter-bar');
+if (projectFilterBar) {
+    projectFilterBar.addEventListener('click', (e) => {
+        const pill = e.target.closest('.project-filter-pill');
+        if (!pill) return;
+
+        projectFilterBar.querySelectorAll('.project-filter-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+
+        const filter = pill.dataset.filter;
+        document.querySelectorAll('#projects-grid .project-card').forEach(card => {
+            const techs = (card.dataset.tech || '').split(' ');
+            const matches = filter === 'all' || techs.includes(filter);
+            card.classList.toggle('project-dimmed', !matches);
+        });
+    });
+}
+
+// ===== Spotlight de cursor nos cards de Projeto e Experiência =====
+document.querySelectorAll('.project-card, .experience-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+    });
+});
+
 // ===== Adicionar evento de fechar modal =====
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('details-modal');
@@ -880,71 +908,6 @@ window.addEventListener('scroll', () => {
     isSpyScrolling = true;
 }, { passive: true });
 
-// --- Lógica do Botão "Ver Mais" nos Certificados ---
-const certificatesGrid = document.getElementById('certificates-grid');
-const toggleCertsBtn = document.getElementById('toggle-certs-btn');
-const toggleCertsContainer = document.getElementById('cert-toggle-container');
-const toggleCertsText = document.getElementById('toggle-certs-text');
-const toggleCertsIcon = document.getElementById('toggle-certs-icon');
-
-const INITIAL_CERTS_COUNT = 6;
-let isShowingAllCerts = false;
-
-if (certificatesGrid && toggleCertsBtn && toggleCertsContainer) {
-    // Pega todos os cards mas exclui a "Formação Acadêmica" (pegamos apenas os da div de certificados)
-    const certCards = Array.from(certificatesGrid.querySelectorAll('.academic-card'));
-    
-    if (certCards.length > INITIAL_CERTS_COUNT) {
-        toggleCertsContainer.classList.remove('hidden');
-        
-        // Esconde os adicionais na carga inicial
-        certCards.forEach((card, index) => {
-            if (index >= INITIAL_CERTS_COUNT) {
-                card.classList.add('hidden', 'opacity-0');
-                card.classList.add('transition-opacity', 'duration-500'); // Garante a transição suave
-            }
-        });
-
-        toggleCertsText.textContent = `Ver todos os ${certCards.length} certificados`;
-
-        toggleCertsBtn.addEventListener('click', () => {
-            const currentLang = getInitialLanguage();
-            
-            isShowingAllCerts = !isShowingAllCerts;
-            
-            if (isShowingAllCerts) {
-                // Mostrar todos com efeito cascata
-                certCards.forEach((card, index) => {
-                    if (index >= INITIAL_CERTS_COUNT) {
-                        card.classList.remove('hidden');
-                        // Timeout curto gera o efeito cascata legal
-                        setTimeout(() => {
-                            card.classList.remove('opacity-0');
-                        }, 50 * (index - INITIAL_CERTS_COUNT));
-                    }
-                });
-                toggleCertsText.setAttribute('data-i18n', 'cert_btn_hide');
-                toggleCertsText.textContent = i18nDictionary[currentLang]['cert_btn_hide'];
-                toggleCertsIcon.classList.add('rotate-180');
-            } else {
-                // Esconder adicionais
-                certCards.forEach((card, index) => {
-                    if (index >= INITIAL_CERTS_COUNT) {
-                        card.classList.add('opacity-0');
-                        setTimeout(() => { card.classList.add('hidden'); }, 300);
-                    }
-                });
-                toggleCertsText.setAttribute('data-i18n', 'cert_btn_show');
-                toggleCertsText.textContent = i18nDictionary[currentLang]['cert_btn_show'];
-                toggleCertsIcon.classList.remove('rotate-180');
-                
-                // Rola de volta para evitar que a tela fique parada no meio do nada após encolher
-                certificatesGrid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        });
-    }
-}
-
 // --- Lógica de Internacionalização (i18n) ---
 const i18nDictionary = {
     'pt': {
@@ -1015,6 +978,8 @@ const i18nDictionary = {
         'proj6_desc': 'Framework de automação com Playwright. Testes de API, E2E e visuais com POM e CI/CD.',
         'proj7_desc': 'Automação mobile em Android com Appium e Pytest. Page Object Model completo, do login ao checkout.',
         'proj_github': 'Ver no GitHub',
+        'proj_filter_all': 'Todos',
+        'proj_featured_badge': 'Projeto em destaque',
         'edu_title': 'Formação e Certificados',
         'edu_subtitle': 'Educação contínua em qualidade de software',
         'edu_academic_title': 'Formação Acadêmica',
@@ -1028,8 +993,6 @@ const i18nDictionary = {
         'edu_grad_modal_title': 'Análise e Desenvolvimento de Sistemas',
         'edu_grad_modal_details': 'Graduação em Análise e Desenvolvimento de Sistemas pela UNINOVE, onde adquiri uma base sólida em lógica de programação, banco de dados, desenvolvimento web e mobile, e análise de requisitos, preparando-me para atuar no ciclo completo de desenvolvimento de software.',
         'edu_certs_title': 'Certificados',
-        'cert_btn_show': 'Ver todos os 22 certificados',
-        'cert_btn_hide': 'Ver menos',
         'contact_title': 'Contato',
         'contact_subtitle': 'Aberto a oportunidades e discussões sobre tecnologia e qualidade de software.',
         'stat_1': 'Certificações',
@@ -1105,6 +1068,8 @@ const i18nDictionary = {
         'proj6_desc': 'Automation framework with Playwright. API, E2E, and visual testing with POM and CI/CD.',
         'proj7_desc': 'Android mobile automation with Appium and Pytest. Full Page Object Model, from login to checkout.',
         'proj_github': 'View on GitHub',
+        'proj_filter_all': 'All',
+        'proj_featured_badge': 'Featured project',
         'edu_title': 'Education & Certifications',
         'edu_subtitle': 'Continuous education in software quality',
         'edu_academic_title': 'Academic Background',
@@ -1118,8 +1083,6 @@ const i18nDictionary = {
         'edu_grad_modal_title': 'Systems Analysis and Development',
         'edu_grad_modal_details': 'Degree in Systems Analysis and Development from UNINOVE, where I acquired a solid foundation in programming logic, databases, web and mobile development, and requirements analysis, preparing me to work across the full software development lifecycle.',
         'edu_certs_title': 'Certifications',
-        'cert_btn_show': 'View all 22 certifications',
-        'cert_btn_hide': 'Show less',
         'contact_title': 'Contact',
         'contact_subtitle': 'Open to opportunities and discussions about technology and software quality.',
         'stat_1': 'Certifications',
