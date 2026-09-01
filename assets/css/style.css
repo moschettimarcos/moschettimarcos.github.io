@@ -160,53 +160,53 @@ section {
 
 /* ===== Carrossel horizontal de Certificados ===== */
 .cert-carousel {
-    scroll-snap-type: x proximity;
+    scroll-snap-type: x mandatory;
     scrollbar-width: thin;
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+    padding-inline: calc(50% - 84px);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
 }
 
 /* Indicadores de avançar/voltar: não são botões "cheios", só um chevron
-   que fica mais visível na área de fade, sugerindo que dá pra continuar
+   que acende com um brilho ao passar o mouse, sugerindo que dá pra continuar
    o percurso — o carrossel é circular, não tem começo nem fim. */
 .cert-nav-btn {
-    position: absolute;
-    top: 0;
-    bottom: 1rem;
-    width: 44px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 40px;
     background: none;
     border: none;
     color: var(--accent-blue);
     cursor: pointer;
-    z-index: 5;
 }
 
 .cert-nav-btn span {
     opacity: 0.45;
-    transition: opacity 0.2s ease, transform 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
 }
 
 .cert-nav-btn:hover span {
     opacity: 1;
-    transform: scale(1.2);
-}
-
-.cert-nav-prev {
-    left: 0;
-}
-
-.cert-nav-next {
-    right: 0;
+    transform: scale(1.25);
+    filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.8));
 }
 
 .cert-carousel .academic-card {
     flex: 0 0 168px;
     width: 168px;
     padding: 1rem;
-    scroll-snap-align: start;
+    scroll-snap-align: center;
+    opacity: 0.55;
+    transform: scale(0.88);
+}
+
+.cert-carousel .academic-card.cert-active {
+    opacity: 1;
+    transform: scale(1.15);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 24px rgba(59, 130, 246, 0.35);
 }
 
 .cert-carousel .academic-card > div {
@@ -593,6 +593,40 @@ h1, h2, h3, h4 {
     transform: scale(0.97);
 }
 
+/* ===== Projeto em destaque (rotativo) ===== */
+.featured-badge {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--project-color, var(--accent-blue));
+}
+
+.featured-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--project-color, var(--accent-blue));
+    box-shadow: 0 0 8px 2px rgba(var(--project-color-rgb, 59, 130, 246), 0.8);
+}
+
+.project-card.project-featured .featured-badge {
+    display: inline-flex;
+}
+
+@media (min-width: 768px) {
+    .project-card.project-featured {
+        grid-column: span 2 / span 2;
+    }
+}
+
+.project-card.project-featured .h-48 img {
+    width: 6rem;
+    height: 6rem;
+}
+
 /* ===== Seção de Projetos ===== */
 .project-card {
     position: relative;
@@ -689,7 +723,8 @@ a, button {
 }
 
 /* ===== Efeito de Glow nos Cards ao Hover ===== */
-.experience-card::before {
+.experience-card::before,
+.academic-card::before {
     content: '';
     position: absolute;
     inset: 0;
@@ -701,7 +736,8 @@ a, button {
     z-index: 1;
 }
 
-.experience-card:hover::before {
+.experience-card:hover::before,
+.academic-card:hover::before {
     opacity: 1;
 }
 

@@ -725,8 +725,26 @@ if (projectFilterBar) {
     });
 }
 
-// ===== Spotlight de cursor nos cards de Projeto e Experiência =====
-document.querySelectorAll('.project-card, .experience-card').forEach(card => {
+// ===== Rotação do projeto em destaque =====
+const featuredProjectCards = Array.from(document.querySelectorAll('#projects-grid .project-card'));
+if (featuredProjectCards.length) {
+    let featuredProjectIndex = featuredProjectCards.findIndex(card => card.classList.contains('project-featured'));
+    if (featuredProjectIndex === -1) featuredProjectIndex = 0;
+
+    // O destaque atual sempre aparece primeiro na grade
+    featuredProjectCards[featuredProjectIndex].style.order = '-1';
+
+    setInterval(() => {
+        featuredProjectCards[featuredProjectIndex].classList.remove('project-featured');
+        featuredProjectCards[featuredProjectIndex].style.order = '';
+        featuredProjectIndex = (featuredProjectIndex + 1) % featuredProjectCards.length;
+        featuredProjectCards[featuredProjectIndex].classList.add('project-featured');
+        featuredProjectCards[featuredProjectIndex].style.order = '-1';
+    }, 120000);
+}
+
+// ===== Spotlight de cursor nos cards de Projeto, Experiência, Certificados e Formação =====
+document.querySelectorAll('.project-card, .experience-card, .academic-card').forEach(card => {
     let spotlightTicking = false;
     let pendingX = 0;
     let pendingY = 0;
@@ -939,11 +957,54 @@ if (certTrack && certPrevBtn && certNextBtn) {
     function goToCert(index) {
         // Módulo "positivo": garante o efeito de roda, sem começo nem fim
         certIndex = ((index % certCards.length) + certCards.length) % certCards.length;
-        certCards[certIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        const card = certCards[certIndex];
+        // Rola só a faixa de certificados (não scrollIntoView, que também
+        // arrasta a página inteira quando o card já está verticalmente visível)
+        const trackRect = certTrack.getBoundingClientRect();
+        const cardRect = card.getBoundingClientRect();
+        const delta = (cardRect.left + cardRect.width / 2) - (trackRect.left + trackRect.width / 2);
+        certTrack.scrollTo({ left: certTrack.scrollLeft + delta, behavior: 'smooth' });
     }
 
     certNextBtn.addEventListener('click', () => goToCert(certIndex + 1));
     certPrevBtn.addEventListener('click', () => goToCert(certIndex - 1));
+
+    // Marca visualmente qual certificado está centralizado no momento
+    let certScrollTicking = false;
+    function updateActiveCert() {
+        const trackRect = certTrack.getBoundingClientRect();
+        const trackCenter = trackRect.left + trackRect.width / 2;
+        let closest = certCards[0];
+        let closestDist = Infinity;
+        certCards.forEach(card => {
+            const r = card.getBoundingClientRect();
+            const dist = Math.abs((r.left + r.width / 2) - trackCenter);
+            if (dist < closestDist) {
+                closestDist = dist;
+                closest = card;
+            }
+        });
+        certCards.forEach(card => card.classList.toggle('cert-active', card === closest));
+        certIndex = certCards.indexOf(closest);
+    }
+
+    certTrack.addEventListener('scroll', () => {
+        if (certScrollTicking) return;
+        certScrollTicking = true;
+        requestAnimationFrame(() => {
+            updateActiveCert();
+            certScrollTicking = false;
+        });
+    }, { passive: true });
+
+    // Rolar o mouse por cima da faixa vertical avança/volta os certificados
+    certTrack.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+        e.preventDefault();
+        certTrack.scrollLeft += e.deltaY;
+    }, { passive: false });
+
+    updateActiveCert();
 }
 
 // --- Lógica de Internacionalização (i18n) ---
