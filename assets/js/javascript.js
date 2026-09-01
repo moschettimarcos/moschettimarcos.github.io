@@ -979,23 +979,50 @@ if (certTrack && certPrevBtn && certNextBtn) {
     const setWidth = allCerts[setSize].getBoundingClientRect().left - allCerts[0].getBoundingClientRect().left;
 
     let isCertProgrammaticScroll = false;
-    let certProgrammaticScrollTimeout;
+    let certScrollAnimationId = null;
+
+    // Anima o scrollLeft manualmente em vez de usar scrollTo({behavior:'smooth'}).
+    // Com scroll-snap-type:mandatory no carrossel, a rolagem suave nativa do
+    // navegador competia com o snap e podia "corrigir" pro ponto de encaixe
+    // errado no meio do caminho, dando a impressão de reiniciar. Setando
+    // scrollLeft direto a cada frame, o snap nativo nunca entra em ação
+    // (ele só reage a gestos de rolagem do usuário, não a mudanças via JS).
+    function animateScrollTo(targetLeft, duration = 400) {
+        if (certScrollAnimationId) cancelAnimationFrame(certScrollAnimationId);
+        const startLeft = certTrack.scrollLeft;
+        const distance = targetLeft - startLeft;
+        const startTime = performance.now();
+        // Garantia extra: desliga o snap enquanto a animação roda, pro
+        // navegador não tentar "corrigir" a posição no meio do caminho.
+        certTrack.style.scrollSnapType = 'none';
+
+        function step(now) {
+            const t = Math.min((now - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - t, 3);
+            certTrack.scrollLeft = startLeft + distance * eased;
+            if (t < 1) {
+                certScrollAnimationId = requestAnimationFrame(step);
+            } else {
+                certScrollAnimationId = null;
+                isCertProgrammaticScroll = false;
+                certTrack.style.scrollSnapType = '';
+            }
+        }
+        certScrollAnimationId = requestAnimationFrame(step);
+    }
 
     function centerOn(card, smooth) {
         const trackRect = certTrack.getBoundingClientRect();
         const cardRect = card.getBoundingClientRect();
         const delta = (cardRect.left + cardRect.width / 2) - (trackRect.left + trackRect.width / 2);
+        const target = certTrack.scrollLeft + delta;
         if (smooth) {
-            // Enquanto essa rolagem suave está em andamento, o recentralizador
+            // Enquanto essa rolagem está em andamento, o recentralizador
             // (mais abaixo) não deve interferir e brigar com ela no meio do caminho.
             isCertProgrammaticScroll = true;
-            clearTimeout(certProgrammaticScrollTimeout);
-            certTrack.scrollTo({ left: certTrack.scrollLeft + delta, behavior: 'smooth' });
-            certProgrammaticScrollTimeout = setTimeout(() => {
-                isCertProgrammaticScroll = false;
-            }, 500);
+            animateScrollTo(target);
         } else {
-            certTrack.scrollLeft += delta;
+            certTrack.scrollLeft = target;
         }
     }
 
