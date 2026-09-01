@@ -540,6 +540,20 @@ const projectsData = {
             'Relatórios HTML com traces, screenshots e vídeos de falhas'
         ],
         github: 'https://github.com/moschettimarcos/playwright-framework-estudo'
+    },
+    'appium-mobile': {
+        title: 'Ecommerce Mobile Automation',
+        description: 'Framework de automação de testes para Android com Appium e Pytest, aplicando Page Object Model. Cobre o fluxo completo de um e-commerce fictício: login, catálogo, carrinho e checkout.',
+        technologies: ['Appium', 'Python', 'Pytest', 'UiAutomator2', 'Page Object Model'],
+        features: [
+            'Arquitetura baseada em Page Object Model (POM) com Component Objects reutilizáveis',
+            'Suítes de smoke e regressão organizadas por marcadores do Pytest',
+            'Cobertura de login, catálogo, ordenação, carrinho e checkout completo',
+            'Testes negativos com validação de mensagens de erro conferidas ao vivo no emulador',
+            'Configuração via variáveis de ambiente (.env) para portabilidade entre máquinas',
+            'Relatórios de execução com Allure'
+        ],
+        github: 'https://github.com/moschettimarcos/ecommerce-mobile-automation'
     }
 };
 
@@ -554,6 +568,7 @@ const frameworkThemes = {
     'node': { color: '#22C55E', rgb: '34, 197, 94', logo: 'https://cdn.simpleicons.org/nodedotjs/22C55E' },
     'typescript': { color: '#3B82F6', rgb: '59, 130, 246', logo: 'https://cdn.simpleicons.org/typescript/3B82F6' },
     'playwright': { color: '#D33833', rgb: '211, 56, 51', logo: 'https://api.iconify.design/logos:playwright.svg' },
+    'appium': { color: '#7C3AED', rgb: '124, 58, 237', logo: 'https://cdn.simpleicons.org/appium/7C3AED' },
     'default': { color: '#3B82F6', rgb: '59, 130, 246', logo: '' }
 };
 
@@ -926,6 +941,7 @@ const i18nDictionary = {
         'proj4_desc': 'Testes avançados de UI em Java abordando Shadow DOM, iFrames e Ajax.',
         'proj5_desc': 'Automação com Robot Framework e Selenium. Keywords reutilizáveis e CI/CD.',
         'proj6_desc': 'Framework de automação com Playwright. Testes de API, E2E e visuais com POM e CI/CD.',
+        'proj7_desc': 'Automação mobile em Android com Appium e Pytest. Page Object Model completo, do login ao checkout.',
         'proj_github': 'Ver no GitHub',
         'edu_title': 'Formação e Certificados',
         'edu_subtitle': 'Educação contínua em qualidade de software',
@@ -1016,6 +1032,7 @@ const i18nDictionary = {
         'proj4_desc': 'Advanced UI testing in Java covering Shadow DOM, iFrames, and Ajax.',
         'proj5_desc': 'Automation with Robot Framework and Selenium. Reusable keywords and CI/CD.',
         'proj6_desc': 'Automation framework with Playwright. API, E2E, and visual testing with POM and CI/CD.',
+        'proj7_desc': 'Android mobile automation with Appium and Pytest. Full Page Object Model, from login to checkout.',
         'proj_github': 'View on GitHub',
         'edu_title': 'Education & Certifications',
         'edu_subtitle': 'Continuous education in software quality',
