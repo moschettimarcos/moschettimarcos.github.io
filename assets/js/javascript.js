@@ -957,7 +957,6 @@ const i18nDictionary = {
         'nav_contact': 'Contato',
         
         // Hero Section
-        'hero_role': 'Analista de Qualidade',
         'hero_desc': '6+ anos garantindo a qualidade de software através de testes manuais e automação de testes E2E, API e Mobile.',
         'hero_cta_projects': 'Ver Projetos',
         'hero_cta_cv': 'Baixar CV',
@@ -1048,7 +1047,6 @@ const i18nDictionary = {
         'nav_contact': 'Contact',
         
         // Hero Section
-        'hero_role': 'Quality Assurance Analyst',
         'hero_desc': '6+ years ensuring software quality through manual testing and E2E, API, and Mobile test automation.',
         'hero_cta_projects': 'View Projects',
         'hero_cta_cv': 'Download CV',

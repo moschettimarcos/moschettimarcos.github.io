@@ -140,20 +140,22 @@ section {
 /* Efeito Glassmorphism para os cards de Formação */
 /* Importante: manter o mesmo valor de blur do estado normal — transicionar
    backdrop-filter entre valores diferentes causa um "flash" no navegador. */
-.academic-card:hover {
-    background-color: var(--bg-card-hover);
-    border: 1px solid var(--accent-blue);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
 .academic-card {
     position: relative;
+    overflow: hidden;
     background-color: var(--bg-card);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--border-color);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.academic-card:hover {
+    background-color: var(--bg-card-hover);
+    border: 1px solid var(--accent-blue);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+    transform: scale(1.02);
 }
 
 /* Estilos específicos para experience-card (sem efeito QA) */
@@ -163,7 +165,7 @@ section {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     cursor: pointer;
 }
@@ -173,7 +175,8 @@ section {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--accent-blue);
-    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 8px 24px rgba(59, 130, 246, 0.15);
+    transform: scale(1.02);
 }
 
 
@@ -489,19 +492,20 @@ h1, h2, h3, h4 {
 .project-card {
     position: relative;
     overflow: hidden;
+    text-decoration: none;
     border-radius: 1rem;
     background-color: var(--bg-card);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--border-color);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .project-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 32px rgba(var(--project-color-rgb, 59, 130, 246), 0.2);
-    border-color: rgba(var(--project-color-rgb, 59, 130, 246), 0.3);
+    transform: scale(1.02);
+    box-shadow: 0 0 20px rgba(var(--project-color-rgb, 59, 130, 246), 0.3), 0 8px 24px rgba(var(--project-color-rgb, 59, 130, 246), 0.15);
+    border: 1px solid var(--project-color, var(--accent-blue));
 }
 
 /* ===== Melhorias no Header ===== */
@@ -634,10 +638,6 @@ a, button {
 }
 
 /* ===== Indicador de Card Clicável ===== */
-.experience-card {
-    position: relative;
-}
-
 .experience-card::after {
     content: '';
     position: absolute;
@@ -659,11 +659,6 @@ a, button {
 .experience-card:hover::after {
     opacity: 1;
     transform: translateX(0);
-}
-
-.project-card {
-    position: relative;
-    text-decoration: none;
 }
 
 .project-card::after {
@@ -688,76 +683,6 @@ a, button {
 .project-card:hover::after {
     opacity: 1;
     transform: translateX(0);
-}
-
-/* ===== Efeito de Borda Neon Animado ===== */
-.project-card,
-.academic-card {
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.experience-card {
-    position: relative;
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.experience-card:hover,
-.project-card:hover,
-.academic-card:hover {
-    transform: scale(1.02);
-}
-
-.project-card {
-    border: 1px solid var(--border-color);
-    background-color: var(--bg-card);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-
-.project-card:hover {
-    border: 1px solid var(--project-color, var(--accent-blue));
-    box-shadow: 0 0 20px rgba(var(--project-color-rgb, 59, 130, 246), 0.3), 0 8px 24px rgba(var(--project-color-rgb, 59, 130, 246), 0.15);
-}
-
-.experience-card:hover {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 8px 24px rgba(59, 130, 246, 0.15);
-}
-
-@keyframes neon-border {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
-/* ===== Efeito de Loading Animado ===== */
-.loading-shimmer {
-    background: linear-gradient(
-        90deg,
-        var(--bg-card) 0%,
-        var(--bg-card-hover) 50%,
-        var(--bg-card) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: 200% 0;
-    }
-    100% {
-        background-position: -200% 0;
-    }
 }
 
 /* ===== Sistema de Cores Dinâmicas dos Modais (Injetadas via JS) ===== */
