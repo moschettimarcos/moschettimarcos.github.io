@@ -1144,6 +1144,7 @@ const i18nDictionary = {
         'stat_2': 'Empresas',
         'stat_3': 'Anos de Experiência',
         'stat_4': 'Frameworks de Automação',
+        'terminal_header': 'bash — testes automatizados',
         'stats_title': 'Um retrato rápido',
         'stats_subtitle': 'Números da minha trajetória, e um exemplo de como é rodar uma suíte de testes no dia a dia.',
         'skill_manual_testing': 'Testes Manuais',
@@ -1253,6 +1254,7 @@ const i18nDictionary = {
         'stat_2': 'Companies',
         'stat_3': 'Years of Experience',
         'stat_4': 'Automation Frameworks',
+        'terminal_header': 'bash — automated tests',
         'stats_title': 'A quick snapshot',
         'stats_subtitle': 'Numbers from my career, and an example of what running a test suite looks like day to day.',
         'skill_manual_testing': 'Manual Testing',
@@ -1300,6 +1302,39 @@ function translateCertDate(text, lang) {
     });
 }
 
+// Nomes dos 22 certificados: são o título exibido no site, não o nome
+// oficial gravado no certificado em si, então traduzir aqui não altera
+// a credencial real — só ajuda quem lê em inglês a entender do que se trata.
+const CERT_TITLE_PT_TO_EN = {
+    'Playwright eXpress': 'Playwright eXpress',
+    'Minicurso de Java': 'Java Mini-course',
+    'C++: Conhecendo a linguagem e a STL': 'C++: Getting to Know the Language and the STL',
+    'Getting Started with Git and GitHub': 'Getting Started with Git and GitHub',
+    'JavaScript Full Stack Capstone Project': 'JavaScript Full Stack Capstone Project',
+    'CSS: Flexbox e layouts responsivos': 'CSS: Flexbox and Responsive Layouts',
+    'HTML e CSS: estrutura de arquivos e tags': 'HTML and CSS: File Structure and Tags',
+    'JavaScript: explorando a linguagem': 'JavaScript: Exploring the Language',
+    'Cypress: automação de testes E2E': 'Cypress: E2E Test Automation',
+    'Quality Assurance: plano de testes e gestão de bugs': 'Quality Assurance: Test Planning and Bug Management',
+    'Cypress eXpress': 'Cypress eXpress',
+    'Introdução à Programação Orientada a Objeto': 'Introduction to Object-Oriented Programming',
+    'Jira Software - Gestão Ágil de Projetos': 'Jira Software - Agile Project Management',
+    'Testes funcionais com Selenium WebDriver': 'Functional Testing with Selenium WebDriver',
+    'Java Programmer - Módulo 2 e 3': 'Java Programmer - Modules 2 and 3',
+    'Java Programmer - Módulo 1': 'Java Programmer - Module 1',
+    'Lógica de Programação aplicada à Linguagem': 'Programming Logic Applied to the Language',
+    'Scrum - Gestão e Desenvolvimento Ágil': 'Scrum - Agile Management and Development',
+    'Introdução à Lógica de Programação': 'Introduction to Programming Logic',
+    'Kanban: O Guia Completo': 'Kanban: The Complete Guide',
+    'Algoritmos e Lógica de Programação': 'Algorithms and Programming Logic',
+    'Administrador de Salesforce': 'Salesforce Administrator'
+};
+
+function translateCertTitle(text, lang) {
+    if (lang !== 'en') return text;
+    return CERT_TITLE_PT_TO_EN[text] || text;
+}
+
 function updateLanguage(lang) {
     currentLang = lang;
     document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-br' : 'en');
@@ -1309,6 +1344,15 @@ function updateLanguage(lang) {
     document.querySelectorAll('#certificates-grid .academic-card p').forEach(p => {
         if (!p.dataset.originalPt) p.dataset.originalPt = p.textContent;
         p.textContent = translateCertDate(p.dataset.originalPt, lang);
+    });
+    document.querySelectorAll('#certificates-grid .academic-card').forEach(card => {
+        const h4 = card.querySelector('h4');
+        if (!h4) return;
+        if (!h4.dataset.originalPt) h4.dataset.originalPt = h4.textContent;
+        const translatedTitle = translateCertTitle(h4.dataset.originalPt, lang);
+        h4.textContent = translatedTitle;
+        // O clique no card abre o modal usando data-title, não o texto do h4
+        card.dataset.title = translatedTitle;
     });
 
     // Atualiza os textos no HTML baseados no data-i18n
