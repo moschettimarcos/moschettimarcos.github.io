@@ -1015,9 +1015,16 @@ if (certTrack && certPrevBtn && certNextBtn) {
         return closest;
     }
 
+    // Índice (0 a setSize-1) do certificado "atual" dentro do conjunto do
+    // meio. As setas usam só esse número com módulo — nada de geometria —
+    // pra nunca ficar em dúvida sobre qual é o próximo/anterior nas pontas.
+    let currentIndex = 0;
+
     function updateActiveCert() {
         const active = getActiveCard();
         allCerts.forEach(card => card.classList.toggle('cert-active', card === active));
+        const activeIdx = allCerts.indexOf(active) - setSize;
+        currentIndex = ((activeIdx % setSize) + setSize) % setSize;
     }
 
     // "Teletransporta" de volta pro conjunto do meio quando o usuário sai
@@ -1033,15 +1040,13 @@ if (certTrack && certPrevBtn && certNextBtn) {
         }
     }
 
-    certNextBtn.addEventListener('click', () => {
-        const idx = allCerts.indexOf(getActiveCard());
-        centerOn(allCerts[idx + 1] || allCerts[setSize], true);
-    });
+    function goToIndex(newIndex) {
+        currentIndex = ((newIndex % setSize) + setSize) % setSize;
+        centerOn(allCerts[setSize + currentIndex], true);
+    }
 
-    certPrevBtn.addEventListener('click', () => {
-        const idx = allCerts.indexOf(getActiveCard());
-        centerOn(allCerts[idx - 1] || allCerts[allCerts.length - 1], true);
-    });
+    certNextBtn.addEventListener('click', () => goToIndex(currentIndex + 1));
+    certPrevBtn.addEventListener('click', () => goToIndex(currentIndex - 1));
 
     let certScrollTicking = false;
     certTrack.addEventListener('scroll', () => {
