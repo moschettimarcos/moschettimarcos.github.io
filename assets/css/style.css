@@ -161,9 +161,17 @@ section {
 /* ===== Carrossel horizontal de Certificados ===== */
 .cert-carousel {
     scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge legado */
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
     mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+}
+
+/* Some a barrinha de scroll visível: navegação continua por clique nas
+   setas, roda do mouse e arrastar com o dedo no touch (nenhum dos três
+   depende da barra aparecer na tela). */
+.cert-carousel::-webkit-scrollbar {
+    display: none;
 }
 
 /* Indicadores de avançar/voltar: não são botões "cheios", só um chevron
