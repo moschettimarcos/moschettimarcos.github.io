@@ -978,12 +978,22 @@ if (certTrack && certPrevBtn && certNextBtn) {
     const allCerts = Array.from(certTrack.querySelectorAll('.academic-card'));
     const setWidth = allCerts[setSize].getBoundingClientRect().left - allCerts[0].getBoundingClientRect().left;
 
+    let isCertProgrammaticScroll = false;
+    let certProgrammaticScrollTimeout;
+
     function centerOn(card, smooth) {
         const trackRect = certTrack.getBoundingClientRect();
         const cardRect = card.getBoundingClientRect();
         const delta = (cardRect.left + cardRect.width / 2) - (trackRect.left + trackRect.width / 2);
         if (smooth) {
+            // Enquanto essa rolagem suave está em andamento, o recentralizador
+            // (mais abaixo) não deve interferir e brigar com ela no meio do caminho.
+            isCertProgrammaticScroll = true;
+            clearTimeout(certProgrammaticScrollTimeout);
             certTrack.scrollTo({ left: certTrack.scrollLeft + delta, behavior: 'smooth' });
+            certProgrammaticScrollTimeout = setTimeout(() => {
+                isCertProgrammaticScroll = false;
+            }, 500);
         } else {
             certTrack.scrollLeft += delta;
         }
@@ -1010,13 +1020,15 @@ if (certTrack && certPrevBtn && certNextBtn) {
         allCerts.forEach(card => card.classList.toggle('cert-active', card === active));
     }
 
-    // "Teletransporta" de volta pro conjunto do meio quando o usuário rola perto
-    // demais de uma ponta, sem transição visível — é isso que faz o carrossel
-    // parecer infinito em vez de ter começo/fim.
+    // "Teletransporta" de volta pro conjunto do meio quando o usuário sai
+    // inteiramente dele pra um dos clones, sem transição visível — é isso que
+    // faz o carrossel parecer infinito em vez de ter começo/fim. Os limites são
+    // as bordas do conjunto original (setWidth e 2*setWidth), não o meio dele —
+    // um valor errado aqui fazia recentralizar no meio da navegação normal.
     function recenterIfNeeded() {
-        if (certTrack.scrollLeft < setWidth * 0.5) {
+        if (certTrack.scrollLeft < setWidth) {
             certTrack.scrollLeft += setWidth;
-        } else if (certTrack.scrollLeft > setWidth * 1.5) {
+        } else if (certTrack.scrollLeft > setWidth * 2) {
             certTrack.scrollLeft -= setWidth;
         }
     }
@@ -1037,7 +1049,7 @@ if (certTrack && certPrevBtn && certNextBtn) {
         certScrollTicking = true;
         requestAnimationFrame(() => {
             updateActiveCert();
-            recenterIfNeeded();
+            if (!isCertProgrammaticScroll) recenterIfNeeded();
             certScrollTicking = false;
         });
     }, { passive: true });
