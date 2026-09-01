@@ -425,22 +425,33 @@ if (header) {
 
 // ===== Efeito de Digitação Animado (Typing) =====
 const typingText = document.getElementById('typing-text');
-const typingRoles = [
-    'Analista de QA',
-    'Testes Manuais & Exploratórios',
-    'Automação com Cypress',
-    'Testes de API',
-    'Automação com Selenium',
-    'BDD & Gherkin'
-];
+const typingRolesByLang = {
+    pt: [
+        'Analista de QA',
+        'Testes Manuais & Exploratórios',
+        'Automação com Cypress',
+        'Testes de API',
+        'Automação com Selenium',
+        'BDD & Gherkin'
+    ],
+    en: [
+        'QA Analyst',
+        'Manual & Exploratory Testing',
+        'Cypress Automation',
+        'API Testing',
+        'Selenium Automation',
+        'BDD & Gherkin'
+    ]
+};
 let roleIndex = 0;
 let charIndex = 0;
 let isDeletingRole = false;
 
 function initTypingEffect() {
     if (!typingText) return;
-    const currentRole = typingRoles[roleIndex];
-    
+    const roles = typingRolesByLang[currentLang] || typingRolesByLang.pt;
+    const currentRole = roles[roleIndex];
+
     if (isDeletingRole) {
         typingText.textContent = currentRole.substring(0, charIndex - 1);
         charIndex--;
@@ -456,12 +467,19 @@ function initTypingEffect() {
         isDeletingRole = true;
     } else if (isDeletingRole && charIndex === 0) {
         isDeletingRole = false;
-        roleIndex = (roleIndex + 1) % typingRoles.length;
+        roleIndex = (roleIndex + 1) % roles.length;
         typeSpeed = 500; // Pausa curta antes de começar a nova palavra
     }
     setTimeout(initTypingEffect, typeSpeed);
 }
 setTimeout(initTypingEffect, 1000);
+
+function resetTypingEffect() {
+    roleIndex = 0;
+    charIndex = 0;
+    isDeletingRole = false;
+    if (typingText) typingText.textContent = '';
+}
 
 // ===== Contador Animado de Estatísticas =====
 const counters = document.querySelectorAll('.counter');
@@ -722,19 +740,33 @@ function closeModal() {
 
 // ===== Simulador de Terminal (Pipeline QA) =====
 const terminalOutput = document.getElementById('terminal-output');
-const terminalLogs = [
-    { type: 'cmd', text: '$ npm test' },
-    { type: 'info', text: '> Iniciando execução dos testes...' },
-    { type: 'success', text: '✓ [PASS] Validação de contrato da API (0.6s)' },
-    { type: 'success', text: '✓ [PASS] Fluxo de autenticação (0.8s)' },
-    { type: 'success', text: '✓ [PASS] Testes de regressão (1.2s)' },
-    { type: 'success', text: '✓ [PASS] Validação de schema (0.9s)' },
-    { type: 'info', text: '> Gerando relatório de execução...' },
-    { type: 'success', text: '✓ Suíte concluída com sucesso' },
-    { type: 'cmd', text: '$ echo "Pronto para revisão"' }
-];
+const terminalLogsByLang = {
+    pt: [
+        { type: 'cmd', text: '$ npm test' },
+        { type: 'info', text: '> Iniciando execução dos testes...' },
+        { type: 'success', text: '✓ [PASS] Validação de contrato da API (0.6s)' },
+        { type: 'success', text: '✓ [PASS] Fluxo de autenticação (0.8s)' },
+        { type: 'success', text: '✓ [PASS] Testes de regressão (1.2s)' },
+        { type: 'success', text: '✓ [PASS] Validação de schema (0.9s)' },
+        { type: 'info', text: '> Gerando relatório de execução...' },
+        { type: 'success', text: '✓ Suíte concluída com sucesso' },
+        { type: 'cmd', text: '$ echo "Pronto para revisão"' }
+    ],
+    en: [
+        { type: 'cmd', text: '$ npm test' },
+        { type: 'info', text: '> Starting test run...' },
+        { type: 'success', text: '✓ [PASS] API contract validation (0.6s)' },
+        { type: 'success', text: '✓ [PASS] Authentication flow (0.8s)' },
+        { type: 'success', text: '✓ [PASS] Regression tests (1.2s)' },
+        { type: 'success', text: '✓ [PASS] Schema validation (0.9s)' },
+        { type: 'info', text: '> Generating execution report...' },
+        { type: 'success', text: '✓ Suite completed successfully' },
+        { type: 'cmd', text: '$ echo "Ready for review"' }
+    ]
+};
 let logIndex = 0;
 let terminalStarted = false;
+let terminalTimeoutId = null;
 const terminalObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !terminalStarted) {
         terminalStarted = true;
@@ -743,7 +775,8 @@ const terminalObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.5 });
 if (terminalOutput) terminalObserver.observe(terminalOutput);
 function printTerminalLog() {
-    if (logIndex >= terminalLogs.length) {
+    const logs = terminalLogsByLang[currentLang] || terminalLogsByLang.pt;
+    if (logIndex >= logs.length) {
         // Adiciona um cursor de bash piscando ao final da execução
         const cursorLine = document.createElement('div');
         cursorLine.className = 'log-line log-cmd mt-2';
@@ -752,7 +785,7 @@ function printTerminalLog() {
         terminalOutput.scrollTop = terminalOutput.scrollHeight;
         return;
     }
-    const log = terminalLogs[logIndex];
+    const log = logs[logIndex];
     const line = document.createElement('div');
     line.className = `log-line log-${log.type}`;
     line.textContent = log.text;
@@ -760,7 +793,15 @@ function printTerminalLog() {
     terminalOutput.scrollTop = terminalOutput.scrollHeight;
     logIndex++;
     const delay = log.type === 'cmd' ? 800 : (Math.random() * 400 + 100);
-    setTimeout(printTerminalLog, delay);
+    terminalTimeoutId = setTimeout(printTerminalLog, delay);
+}
+
+function resetTerminal() {
+    if (!terminalOutput) return;
+    clearTimeout(terminalTimeoutId);
+    logIndex = 0;
+    terminalOutput.innerHTML = '';
+    if (terminalStarted) printTerminalLog();
 }
 
 // ===== Barra de Progresso de Leitura (Scroll) =====
@@ -837,12 +878,6 @@ window.addEventListener('scroll', () => {
         isSpyScrolling = false;
     });
     isSpyScrolling = true;
-}, { passive: true });
-
-// ===== Glow na navbar ao rolar a página =====
-const siteHeader = document.querySelector('header');
-window.addEventListener('scroll', () => {
-    siteHeader.classList.toggle('header-scrolled', window.scrollY > 40);
 }, { passive: true });
 
 // --- Lógica do Botão "Ver Mais" nos Certificados ---
@@ -1108,6 +1143,8 @@ let currentLang = getInitialLanguage();
 function updateLanguage(lang) {
     currentLang = lang;
     document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-br' : 'en');
+    resetTypingEffect();
+    resetTerminal();
 
     // Atualiza os textos no HTML baseados no data-i18n
     document.querySelectorAll('[data-i18n]').forEach(element => {
