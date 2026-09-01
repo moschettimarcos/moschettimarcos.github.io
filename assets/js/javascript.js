@@ -1143,7 +1143,26 @@ const i18nDictionary = {
         'stat_1': 'Certificações',
         'stat_2': 'Empresas',
         'stat_3': 'Anos de Experiência',
-        'stat_4': 'Frameworks de Automação'
+        'stat_4': 'Frameworks de Automação',
+        'stats_title': 'Um retrato rápido',
+        'stats_subtitle': 'Números da minha trajetória, e um exemplo de como é rodar uma suíte de testes no dia a dia.',
+        'skill_manual_testing': 'Testes Manuais',
+        'skill_e2e_automation': 'Automação E2E',
+        'skill_api_testing': 'Testes de API',
+        'skill_mobile_testing': 'Testes Mobile',
+        'skill_continuous_regression': 'Regressão Contínua',
+        'skill_integration_testing': 'Testes de Integração',
+        'skill_test_architecture': 'Arquitetura de Testes',
+        'skill_performance_testing': 'Testes de Performance',
+        'skill_relational_db': 'Banco de Dados Relacionais',
+        'skill_databases': 'Banco de Dados',
+        'skill_functional_testing': 'Testes Funcionais',
+        'skill_manual_qa': 'QA Manual',
+        'skill_regression_testing': 'Testes de Regressão',
+        'skill_cnab_validation': 'Validação CNAB',
+        'skill_qa_dashboards': 'Dashboards QA',
+        'skill_e2e_testing': 'Testes E2E',
+        'skill_oop': 'POO'
     },
     'en': {
         // Header Menu
@@ -1233,7 +1252,26 @@ const i18nDictionary = {
         'stat_1': 'Certifications',
         'stat_2': 'Companies',
         'stat_3': 'Years of Experience',
-        'stat_4': 'Automation Frameworks'
+        'stat_4': 'Automation Frameworks',
+        'stats_title': 'A quick snapshot',
+        'stats_subtitle': 'Numbers from my career, and an example of what running a test suite looks like day to day.',
+        'skill_manual_testing': 'Manual Testing',
+        'skill_e2e_automation': 'E2E Automation',
+        'skill_api_testing': 'API Testing',
+        'skill_mobile_testing': 'Mobile Testing',
+        'skill_continuous_regression': 'Continuous Regression',
+        'skill_integration_testing': 'Integration Testing',
+        'skill_test_architecture': 'Test Architecture',
+        'skill_performance_testing': 'Performance Testing',
+        'skill_relational_db': 'Relational Databases',
+        'skill_databases': 'Databases',
+        'skill_functional_testing': 'Functional Testing',
+        'skill_manual_qa': 'Manual QA',
+        'skill_regression_testing': 'Regression Testing',
+        'skill_cnab_validation': 'CNAB Validation',
+        'skill_qa_dashboards': 'QA Dashboards',
+        'skill_e2e_testing': 'E2E Testing',
+        'skill_oop': 'OOP'
     }
 };
 
@@ -1246,11 +1284,32 @@ function getInitialLanguage() {
 
 let currentLang = getInitialLanguage();
 
+const MONTH_PT_TO_EN = {
+    jan: 'Jan', fev: 'Feb', mar: 'Mar', abr: 'Apr',
+    mai: 'May', jun: 'Jun', jul: 'Jul', ago: 'Aug',
+    set: 'Sep', out: 'Oct', nov: 'Nov', dez: 'Dec'
+};
+
+// Datas dos certificados ("mar de 2024") são texto solto, não vêm do
+// dicionário de chaves — traduzimos o mês na hora em vez de cadastrar
+// uma chave pra cada um dos 22 certificados.
+function translateCertDate(text, lang) {
+    if (lang !== 'en') return text;
+    return text.replace(/\b(jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez)\s+de\s+(\d{4})/i, (_, mon, year) => {
+        return `${MONTH_PT_TO_EN[mon.toLowerCase()]} ${year}`;
+    });
+}
+
 function updateLanguage(lang) {
     currentLang = lang;
     document.documentElement.setAttribute('lang', lang === 'pt' ? 'pt-br' : 'en');
     resetTypingEffect();
     resetTerminal();
+
+    document.querySelectorAll('#certificates-grid .academic-card p').forEach(p => {
+        if (!p.dataset.originalPt) p.dataset.originalPt = p.textContent;
+        p.textContent = translateCertDate(p.dataset.originalPt, lang);
+    });
 
     // Atualiza os textos no HTML baseados no data-i18n
     document.querySelectorAll('[data-i18n]').forEach(element => {
