@@ -162,9 +162,8 @@ section {
 .cert-carousel {
     scroll-snap-type: x mandatory;
     scrollbar-width: thin;
-    padding-inline: calc(50% - 84px);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0, #000 60px, #000 calc(100% - 60px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
 }
 
 /* Indicadores de avançar/voltar: não são botões "cheios", só um chevron
@@ -616,13 +615,16 @@ h1, h2, h3, h4 {
     display: inline-flex;
 }
 
+/* Quando um filtro está ativo e o destaque não faz parte do resultado, ele
+   volta ao tamanho normal junto com os outros — só ganha o tamanho bento
+   quando está em destaque E (sem filtro, ou o filtro é dele mesmo). */
 @media (min-width: 768px) {
-    .project-card.project-featured {
+    .project-card.project-featured:not(.project-dimmed) {
         grid-column: span 2 / span 2;
     }
 }
 
-.project-card.project-featured .h-48 img {
+.project-card.project-featured:not(.project-dimmed) .h-48 img {
     width: 6rem;
     height: 6rem;
 }
@@ -664,10 +666,30 @@ header.scrolled {
 
 
 /* ===== Melhorias na Timeline de Experiência ===== */
+/* Linha vertical conectando os cards de Experiência, com um ponto por card
+   alinhado à sua própria posição (funciona com qualquer altura de card). */
+.timeline-rail-container::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent-blue), rgba(59, 130, 246, 0.15));
+}
+
 .timeline-dot {
-    position: relative;
+    position: absolute;
+    left: -29px;
+    top: 28px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--bg-card);
+    border: 2px solid var(--accent-blue);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
     z-index: 10;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .timeline-dot:hover {
@@ -880,6 +902,15 @@ a, button {
     background-color: rgba(var(--dynamic-color-rgb, 59, 130, 246), 0.2);
     border-color: rgba(var(--dynamic-color-rgb, 59, 130, 246), 0.5);
     box-shadow: 0 0 15px rgba(var(--dynamic-color-rgb, 59, 130, 246), 0.2);
+}
+
+/* Competências "principais": maiores e mais vivas que o resto, pra quem
+   escaneia rápido ver de cara onde é mais forte, sem virar uma nuvem confusa. */
+.skill-primary {
+    font-size: 1rem;
+    padding: 0.55rem 1rem;
+    background-color: rgba(59, 130, 246, 0.14);
+    border-color: rgba(59, 130, 246, 0.4) !important;
 }
 
 /* Botão Principal com Glow Dinâmico */

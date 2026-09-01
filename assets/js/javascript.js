@@ -744,7 +744,7 @@ if (featuredProjectCards.length) {
 }
 
 // ===== Spotlight de cursor nos cards de Projeto, Experiência, Certificados e Formação =====
-document.querySelectorAll('.project-card, .experience-card, .academic-card').forEach(card => {
+function attachCursorSpotlight(card) {
     let spotlightTicking = false;
     let pendingX = 0;
     let pendingY = 0;
@@ -763,7 +763,9 @@ document.querySelectorAll('.project-card, .experience-card, .academic-card').for
             });
         }
     });
-});
+}
+
+document.querySelectorAll('.project-card, .experience-card, .academic-card').forEach(attachCursorSpotlight);
 
 // ===== Adicionar evento de fechar modal =====
 document.addEventListener('DOMContentLoaded', () => {
@@ -793,15 +795,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, { passive: true });
 });
-
-function closeModal() {
-    const modal = document.getElementById('details-modal');
-    modal.classList.add('opacity-0');
-    modal.querySelector('#modal-content').classList.add('scale-95');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
-}
 
 // ===== Simulador de Terminal (Pipeline QA) =====
 const terminalOutput = document.getElementById('terminal-output');
@@ -945,38 +938,63 @@ window.addEventListener('scroll', () => {
     isSpyScrolling = true;
 }, { passive: true });
 
-// ===== Navegação circular do carrossel de Certificados =====
+// ===== Carrossel infinito de Certificados =====
 const certTrack = document.getElementById('certificates-grid');
 const certPrevBtn = document.getElementById('cert-prev');
 const certNextBtn = document.getElementById('cert-next');
 
 if (certTrack && certPrevBtn && certNextBtn) {
-    const certCards = Array.from(certTrack.querySelectorAll('.academic-card'));
-    let certIndex = 0;
+    const originalCerts = Array.from(certTrack.querySelectorAll('.academic-card'));
+    const setSize = originalCerts.length;
 
-    function goToCert(index) {
-        // Módulo "positivo": garante o efeito de roda, sem começo nem fim
-        certIndex = ((index % certCards.length) + certCards.length) % certCards.length;
-        const card = certCards[certIndex];
-        // Rola só a faixa de certificados (não scrollIntoView, que também
-        // arrasta a página inteira quando o card já está verticalmente visível)
+    // Clona o conjunto inteiro antes e depois do original, para que rolar até
+    // qualquer ponta sempre encontre mais certificados — nunca um fim de fato.
+    const cloneBefore = originalCerts.map(card => card.cloneNode(true));
+    const cloneAfter = originalCerts.map(card => card.cloneNode(true));
+
+    const fragBefore = document.createDocumentFragment();
+    cloneBefore.forEach(card => fragBefore.appendChild(card));
+    certTrack.insertBefore(fragBefore, certTrack.firstChild);
+
+    const fragAfter = document.createDocumentFragment();
+    cloneAfter.forEach(card => fragAfter.appendChild(card));
+    certTrack.appendChild(fragAfter);
+
+    // Clones não herdam os listeners de clique/teclado nem o spotlight de
+    // cursor (cloneNode só copia atributos, não os listeners já anexados
+    // aos cards originais), então recriamos os dois aqui.
+    [...cloneBefore, ...cloneAfter].forEach(card => {
+        attachCursorSpotlight(card);
+        card.addEventListener('click', () => {
+            const title = card.dataset.title;
+            const details = card.dataset.details;
+            if (title && details) openModal(title, `<p>${details}</p>`);
+        });
+        card.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') card.click();
+        });
+    });
+
+    const allCerts = Array.from(certTrack.querySelectorAll('.academic-card'));
+    const setWidth = allCerts[setSize].getBoundingClientRect().left - allCerts[0].getBoundingClientRect().left;
+
+    function centerOn(card, smooth) {
         const trackRect = certTrack.getBoundingClientRect();
         const cardRect = card.getBoundingClientRect();
         const delta = (cardRect.left + cardRect.width / 2) - (trackRect.left + trackRect.width / 2);
-        certTrack.scrollTo({ left: certTrack.scrollLeft + delta, behavior: 'smooth' });
+        if (smooth) {
+            certTrack.scrollTo({ left: certTrack.scrollLeft + delta, behavior: 'smooth' });
+        } else {
+            certTrack.scrollLeft += delta;
+        }
     }
 
-    certNextBtn.addEventListener('click', () => goToCert(certIndex + 1));
-    certPrevBtn.addEventListener('click', () => goToCert(certIndex - 1));
-
-    // Marca visualmente qual certificado está centralizado no momento
-    let certScrollTicking = false;
-    function updateActiveCert() {
+    function getActiveCard() {
         const trackRect = certTrack.getBoundingClientRect();
         const trackCenter = trackRect.left + trackRect.width / 2;
-        let closest = certCards[0];
+        let closest = allCerts[setSize];
         let closestDist = Infinity;
-        certCards.forEach(card => {
+        allCerts.forEach(card => {
             const r = card.getBoundingClientRect();
             const dist = Math.abs((r.left + r.width / 2) - trackCenter);
             if (dist < closestDist) {
@@ -984,15 +1002,42 @@ if (certTrack && certPrevBtn && certNextBtn) {
                 closest = card;
             }
         });
-        certCards.forEach(card => card.classList.toggle('cert-active', card === closest));
-        certIndex = certCards.indexOf(closest);
+        return closest;
     }
 
+    function updateActiveCert() {
+        const active = getActiveCard();
+        allCerts.forEach(card => card.classList.toggle('cert-active', card === active));
+    }
+
+    // "Teletransporta" de volta pro conjunto do meio quando o usuário rola perto
+    // demais de uma ponta, sem transição visível — é isso que faz o carrossel
+    // parecer infinito em vez de ter começo/fim.
+    function recenterIfNeeded() {
+        if (certTrack.scrollLeft < setWidth * 0.5) {
+            certTrack.scrollLeft += setWidth;
+        } else if (certTrack.scrollLeft > setWidth * 1.5) {
+            certTrack.scrollLeft -= setWidth;
+        }
+    }
+
+    certNextBtn.addEventListener('click', () => {
+        const idx = allCerts.indexOf(getActiveCard());
+        centerOn(allCerts[idx + 1] || allCerts[setSize], true);
+    });
+
+    certPrevBtn.addEventListener('click', () => {
+        const idx = allCerts.indexOf(getActiveCard());
+        centerOn(allCerts[idx - 1] || allCerts[allCerts.length - 1], true);
+    });
+
+    let certScrollTicking = false;
     certTrack.addEventListener('scroll', () => {
         if (certScrollTicking) return;
         certScrollTicking = true;
         requestAnimationFrame(() => {
             updateActiveCert();
+            recenterIfNeeded();
             certScrollTicking = false;
         });
     }, { passive: true });
@@ -1004,6 +1049,7 @@ if (certTrack && certPrevBtn && certNextBtn) {
         certTrack.scrollLeft += e.deltaY;
     }, { passive: false });
 
+    centerOn(allCerts[setSize], false);
     updateActiveCert();
 }
 
