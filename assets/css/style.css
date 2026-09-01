@@ -162,8 +162,44 @@ section {
 .cert-carousel {
     scroll-snap-type: x proximity;
     scrollbar-width: thin;
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0, #000 24px, #000 calc(100% - 24px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+}
+
+/* Indicadores de avançar/voltar: não são botões "cheios", só um chevron
+   que fica mais visível na área de fade, sugerindo que dá pra continuar
+   o percurso — o carrossel é circular, não tem começo nem fim. */
+.cert-nav-btn {
+    position: absolute;
+    top: 0;
+    bottom: 1rem;
+    width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: var(--accent-blue);
+    cursor: pointer;
+    z-index: 5;
+}
+
+.cert-nav-btn span {
+    opacity: 0.45;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.cert-nav-btn:hover span {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.cert-nav-prev {
+    left: 0;
+}
+
+.cert-nav-next {
+    right: 0;
 }
 
 .cert-carousel .academic-card {

@@ -567,6 +567,27 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="projects-grid">
+                    <!-- Projeto em destaque -->
+                    <article class="project-card group cursor-pointer h-full flex flex-col md:col-span-2" data-tech="appium python" tabindex="0" role="button" aria-label="Ver detalhes do projeto Ecommerce Mobile Automation" onclick="openProjectModal('appium-mobile')" style="--project-color: #7C3AED; --project-color-rgb: 124, 58, 237;">
+                        <div class="overflow-hidden h-48 flex items-center justify-center relative" style="background: linear-gradient(135deg, rgba(var(--project-color-rgb), 0.1), rgba(var(--project-color-rgb), 0.25));">
+                            <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white" style="background-color: var(--project-color);" data-i18n="proj_featured_badge">Projeto em destaque</span>
+                            <img src="https://cdn.simpleicons.org/appium/7C3AED" alt="Appium" class="w-24 h-24 transition-transform duration-300 group-hover:scale-110" loading="lazy">
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Ecommerce Mobile Automation</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-4" data-i18n="proj7_desc">Automação mobile em Android com Appium e Pytest. Page Object Model completo, do login ao checkout.</p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="px-3 py-1 glass-badge rounded-lg text-xs font-semibold uppercase tracking-wider">Appium</span>
+                                <span class="px-3 py-1 glass-badge rounded-lg text-xs font-semibold uppercase tracking-wider">Python</span>
+                                <span class="px-3 py-1 glass-badge rounded-lg text-xs font-semibold uppercase tracking-wider">Pytest</span>
+                            </div>
+                            <a href="https://github.com/moschettimarcos/ecommerce-mobile-automation" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium transition-colors">
+                                <span data-i18n="proj_github">Ver no GitHub</span>
+                                <span data-lucide="arrow-up-right" class="w-4 h-4"></span>
+                            </a>
+                        </div>
+                    </article>
+
                     <!-- Projeto 1 -->
                 <article class="project-card group cursor-pointer h-full flex flex-col" data-tech="cypress" tabindex="0" role="button" aria-label="Ver detalhes do projeto Cypress API Automation" onclick="openProjectModal('cypress-api')" style="--project-color: #10B981; --project-color-rgb: 16, 185, 129;">
                         <div class="overflow-hidden h-48 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(var(--project-color-rgb), 0.1), rgba(var(--project-color-rgb), 0.25));">
@@ -586,7 +607,7 @@
                             </a>
                         </div>
                     </article>
-                    
+
                     <!-- Projeto 2 -->
                 <article class="project-card group cursor-pointer h-full flex flex-col" data-tech="cypress" tabindex="0" role="button" aria-label="Ver detalhes do projeto The Internet Cypress" onclick="openProjectModal('the-internet')" style="--project-color: #10B981; --project-color-rgb: 16, 185, 129;">
                         <div class="overflow-hidden h-48 flex items-center justify-center" style="background: linear-gradient(135deg, rgba(var(--project-color-rgb), 0.1), rgba(var(--project-color-rgb), 0.25));">
@@ -686,27 +707,6 @@
                             </a>
                         </div>
                     </article>
-
-                    <!-- Projeto 7 (em destaque) -->
-                    <article class="project-card group cursor-pointer h-full flex flex-col md:col-span-2" data-tech="appium python" tabindex="0" role="button" aria-label="Ver detalhes do projeto Ecommerce Mobile Automation" onclick="openProjectModal('appium-mobile')" style="--project-color: #7C3AED; --project-color-rgb: 124, 58, 237;">
-                        <div class="overflow-hidden h-48 flex items-center justify-center relative" style="background: linear-gradient(135deg, rgba(var(--project-color-rgb), 0.1), rgba(var(--project-color-rgb), 0.25));">
-                            <span class="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold text-white" style="background-color: var(--project-color);" data-i18n="proj_featured_badge">Projeto em destaque</span>
-                            <img src="https://cdn.simpleicons.org/appium/7C3AED" alt="Appium" class="w-16 h-16 transition-transform duration-300 group-hover:scale-110" loading="lazy">
-                        </div>
-                        <div class="p-6 flex-1 flex flex-col">
-                            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Ecommerce Mobile Automation</h3>
-                            <p class="text-gray-600 dark:text-gray-300 mb-4" data-i18n="proj7_desc">Automação mobile em Android com Appium e Pytest. Page Object Model completo, do login ao checkout.</p>
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="px-3 py-1 glass-badge rounded-lg text-xs font-semibold uppercase tracking-wider">Appium</span>
-                                <span class="px-3 py-1 glass-badge rounded-lg text-xs font-semibold uppercase tracking-wider">Python</span>
-                                <span class="px-3 py-1 glass-badge rounded-lg text-xs font-semibold uppercase tracking-wider">Pytest</span>
-                            </div>
-                            <a href="https://github.com/moschettimarcos/ecommerce-mobile-automation" target="_blank" rel="noopener noreferrer" class="mt-auto inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium transition-colors">
-                                <span data-i18n="proj_github">Ver no GitHub</span>
-                                <span data-lucide="arrow-up-right" class="w-4 h-4"></span>
-                            </a>
-                        </div>
-                    </article>
                 </div>
             </div>
         </section>
@@ -780,6 +780,13 @@
                         </div>
                         Certificados
                     </h3>
+                    <div class="relative">
+                    <button type="button" id="cert-prev" class="cert-nav-btn cert-nav-prev" aria-label="Certificado anterior">
+                        <span data-lucide="chevron-left" class="w-6 h-6"></span>
+                    </button>
+                    <button type="button" id="cert-next" class="cert-nav-btn cert-nav-next" aria-label="Próximo certificado">
+                        <span data-lucide="chevron-right" class="w-6 h-6"></span>
+                    </button>
                     <div id="certificates-grid" class="cert-carousel flex gap-4 overflow-x-auto pb-4">
                         <!-- Card 1 (Playwright eXpress) -->
                         <div class="academic-card bg-white/5 dark:bg-black/5 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/20 dark:border-gray-700/20 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all duration-300 cursor-pointer"
@@ -1133,7 +1140,8 @@
                                 </div>
                             </div>
                         </div>
-                    
+
+                    </div>
                     </div>
         </section>
 

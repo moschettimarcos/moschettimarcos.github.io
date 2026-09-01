@@ -707,24 +707,43 @@ if (projectFilterBar) {
         const pill = e.target.closest('.project-filter-pill');
         if (!pill) return;
 
-        projectFilterBar.querySelectorAll('.project-filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
+        // Clicar de novo no filtro já ativo desmarca e volta pro "Todos"
+        const isAllPill = pill.dataset.filter === 'all';
+        const filter = (pill.classList.contains('active') && !isAllPill) ? 'all' : pill.dataset.filter;
 
-        const filter = pill.dataset.filter;
+        projectFilterBar.querySelectorAll('.project-filter-pill').forEach(p => {
+            p.classList.toggle('active', p.dataset.filter === filter);
+        });
+
         document.querySelectorAll('#projects-grid .project-card').forEach(card => {
             const techs = (card.dataset.tech || '').split(' ');
             const matches = filter === 'all' || techs.includes(filter);
             card.classList.toggle('project-dimmed', !matches);
+            // Os projetos que combinam com o filtro sobem para o início da grade
+            card.style.order = filter === 'all' ? '' : (matches ? '0' : '1');
         });
     });
 }
 
 // ===== Spotlight de cursor nos cards de Projeto e Experiência =====
 document.querySelectorAll('.project-card, .experience-card').forEach(card => {
+    let spotlightTicking = false;
+    let pendingX = 0;
+    let pendingY = 0;
+
     card.addEventListener('mousemove', (e) => {
         const rect = card.getBoundingClientRect();
-        card.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
-        card.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+        pendingX = e.clientX - rect.left;
+        pendingY = e.clientY - rect.top;
+
+        if (!spotlightTicking) {
+            spotlightTicking = true;
+            requestAnimationFrame(() => {
+                card.style.setProperty('--mouse-x', `${pendingX}px`);
+                card.style.setProperty('--mouse-y', `${pendingY}px`);
+                spotlightTicking = false;
+            });
+        }
     });
 });
 
@@ -907,6 +926,25 @@ window.addEventListener('scroll', () => {
     });
     isSpyScrolling = true;
 }, { passive: true });
+
+// ===== Navegação circular do carrossel de Certificados =====
+const certTrack = document.getElementById('certificates-grid');
+const certPrevBtn = document.getElementById('cert-prev');
+const certNextBtn = document.getElementById('cert-next');
+
+if (certTrack && certPrevBtn && certNextBtn) {
+    const certCards = Array.from(certTrack.querySelectorAll('.academic-card'));
+    let certIndex = 0;
+
+    function goToCert(index) {
+        // Módulo "positivo": garante o efeito de roda, sem começo nem fim
+        certIndex = ((index % certCards.length) + certCards.length) % certCards.length;
+        certCards[certIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+    }
+
+    certNextBtn.addEventListener('click', () => goToCert(certIndex + 1));
+    certPrevBtn.addEventListener('click', () => goToCert(certIndex - 1));
+}
 
 // --- Lógica de Internacionalização (i18n) ---
 const i18nDictionary = {
