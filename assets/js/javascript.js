@@ -97,14 +97,46 @@ if (mobileMenuButton && mobileMenu && menuIcon && closeIcon) {
 let isProgrammaticNavScroll = false;
 let programmaticScrollTimeout;
 
+const navPill = document.getElementById('nav-pill');
+
+function moveNavPill(link) {
+    if (!navPill) return;
+    if (!link) {
+        navPill.classList.remove('is-visible');
+        return;
+    }
+    navPill.style.width = `${link.offsetWidth}px`;
+    navPill.style.transform = `translateX(${link.offsetLeft}px)`;
+    navPill.classList.add('is-visible');
+}
+
 function setActiveNavLink(sectionId) {
+    let desktopActiveLink = null;
     navLinks.forEach(link => {
+        const isDesktopLink = !!link.closest('#nav-links-track');
         link.classList.remove('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
         if (link.getAttribute('href') === `#${sectionId}`) {
-            link.classList.add('text-blue-600', 'dark:text-blue-400', 'bg-blue-50', 'dark:bg-blue-900/30');
+            link.classList.add('text-blue-600', 'dark:text-blue-400');
+            if (isDesktopLink) {
+                desktopActiveLink = link;
+            } else {
+                // Sem pílula deslizante no menu mobile: mantém o destaque com fundo sólido
+                link.classList.add('bg-blue-50', 'dark:bg-blue-900/30');
+            }
         }
     });
+    moveNavPill(desktopActiveLink);
 }
+
+window.addEventListener('resize', () => {
+    const currentActive = document.querySelector('#nav-links-track a.text-blue-600');
+    if (!currentActive) return;
+    navPill.style.transition = 'none';
+    moveNavPill(currentActive);
+    requestAnimationFrame(() => {
+        navPill.style.transition = '';
+    });
+});
 
 document.querySelectorAll('header a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -805,6 +837,12 @@ window.addEventListener('scroll', () => {
         isSpyScrolling = false;
     });
     isSpyScrolling = true;
+}, { passive: true });
+
+// ===== Glow na navbar ao rolar a página =====
+const siteHeader = document.querySelector('header');
+window.addEventListener('scroll', () => {
+    siteHeader.classList.toggle('header-scrolled', window.scrollY > 40);
 }, { passive: true });
 
 // --- Lógica do Botão "Ver Mais" nos Certificados ---
