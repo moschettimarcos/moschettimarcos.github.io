@@ -1041,8 +1041,16 @@ if (certTrack && certPrevBtn && certNextBtn) {
     }
 
     function goToIndex(newIndex) {
+        // Quando a volta acontece (passou do fim ou voltou antes do começo),
+        // mira no clone do lado pro qual o usuário já estava indo — a rolagem
+        // visível continua reto naquele sentido, em vez de "voltar" até o
+        // conjunto original, que ficaria pra trás na direção contrária.
+        let targetOffset = setSize;
+        if (newIndex >= setSize) targetOffset = setSize * 2;
+        else if (newIndex < 0) targetOffset = 0;
+
         currentIndex = ((newIndex % setSize) + setSize) % setSize;
-        centerOn(allCerts[setSize + currentIndex], true);
+        centerOn(allCerts[targetOffset + currentIndex], true);
     }
 
     certNextBtn.addEventListener('click', () => goToIndex(currentIndex + 1));
