@@ -8,7 +8,10 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <style>
 *{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif;background:radial-gradient(900px 500px at 20% 0%,#1d3d7a,#0e1a33 70%);color:#e2e8f0}
+html{background:#0c1730}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 50% 45% at 50% 45%,rgba(37,99,235,.32),rgba(37,99,235,.10) 45%,transparent 75%)}
+.box{position:relative;z-index:1}
+body{margin:0;position:relative;min-height:100vh;display:grid;place-items:center;padding:24px;font-family:Inter,'Segoe UI',system-ui,-apple-system,sans-serif;background:#0c1730;color:#e2e8f0}
 .box{width:min(640px,100%)}
 .term{border-radius:14px;background:#0b1220;border:1px solid #1f2a44;box-shadow:0 30px 70px rgba(0,0,0,.45);overflow:hidden;font-family:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:14px}
 .bar{display:flex;align-items:center;gap:6px;padding:10px 14px;background:#111a2e;border-bottom:1px solid #1f2a44;color:#64748b;font-size:12px}
@@ -43,7 +46,7 @@ p.lead{margin:0 0 26px;color:#94a3b8;font-size:17px;line-height:1.6}
   </div>
   <h1 id="t">Bug encontrado: essa página não existe.</h1>
   <p class="lead" id="d">O endereço pode ter mudado ou foi digitado errado. Já registrei o bug. Volte para o portfólio e continue de onde parou.</p>
-  <div class="act"><a class="btn pri" href="/" id="h">← Voltar ao portfólio</a><a class="btn gho" href="/#projetos" id="pj">Ver projetos</a></div>
+  <div class="act"><a class="btn pri" href="/" id="h">← Voltar ao portfólio</a></div>
 </main>
 <script>
 (function(){
@@ -53,7 +56,7 @@ p.lead{margin:0 0 26px;color:#94a3b8;font-size:17px;line-height:1.6}
     document.documentElement.lang='en';document.title='404 · Page not found · Marcos Moschetti';
     document.getElementById('t').textContent='Bug found: this page does not exist.';
     document.getElementById('d').textContent='The address may have changed or been mistyped. Bug logged. Head back to the portfolio and pick up where you left off.';
-    document.getElementById('t1').textContent='opens the home page';document.getElementById('t2').textContent='opens';document.getElementById('h').textContent='← Back to portfolio';document.getElementById('pj').textContent='View projects';
+    document.getElementById('t1').textContent='opens the home page';document.getElementById('t2').textContent='opens';document.getElementById('h').textContent='← Back to portfolio';
     document.querySelector('.term').setAttribute('aria-label','Terminal showing a failed test: page not found, error 404');
   }
 })();
