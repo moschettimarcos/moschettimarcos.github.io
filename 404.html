@@ -50,7 +50,7 @@ p.lead{margin:0 0 26px;color:#94a3b8;font-size:17px;line-height:1.6}
 </main>
 <script>
 (function(){
-  var p=location.pathname;if(p.length>34)p=p.slice(0,32)+'…';document.getElementById('path').textContent=p||'/';
+  var p=location.pathname,q=new URLSearchParams(location.search).get('from');if(q)p='/'+q;if(p.length>34)p=p.slice(0,32)+'…';document.getElementById('path').textContent=p||'/';
   var lang=null;try{lang=localStorage.getItem('lang');}catch(e){}
   if(lang==='en'||(!lang&&(navigator.language||'pt').toLowerCase().indexOf('pt')!==0)){
     document.documentElement.lang='en';document.title='404 · Page not found · Marcos Moschetti';

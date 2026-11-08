@@ -1147,6 +1147,12 @@ main,header{transition:opacity .18s ease}
 @keyframes chDown{to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){#heroName .ch{opacity:1;transform:none;animation:none}}
 html.rm #heroName .ch{opacity:1 !important;transform:none !important}
+
+/* destaques: ícone ao lado do título */
+.hl .h{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center;align-content:start}
+.hl .hic{margin:0 !important}
+.hl .h b{font-size:clamp(20px,1.9vw,25px) !important}
+.hl .h p{grid-column:1 / -1;margin-top:14px}
 </style>
 </head>
 <body class="o1 o8 n1 n3 n4 o2 n6 o10 r1 r3 r4 g1 g2 c1 e1 tl-neon p1 k1 ct1 ct2 k2 x3 k4 q1 q4 q5 a2 a5 a6 b2 b3 b4 b5 f1 f2 f3 f4">
@@ -1831,7 +1837,7 @@ html.rm #heroName .ch{opacity:1 !important;transform:none !important}
   if(links)new MutationObserver(ind).observe(links,{attributes:true,subtree:true,attributeFilter:['aria-current']});
   // c1 pipeline
   var fl=document.querySelector('.flow'),steps=fl?fl.querySelectorAll('li'):[];
-  function flow(){if(!fl)return;var r=fl.getBoundingClientRect(),vh=innerHeight,p=(vh*0.85-r.top)/(r.height+vh*0.35);p=Math.max(0,Math.min(1,p));fl.style.setProperty('--pf',p.toFixed(3));
+  function flow(){if(!fl)return;var r=fl.getBoundingClientRect(),vh=innerHeight,p=(vh*0.6-r.top)/(r.height||1);p=Math.max(0,Math.min(1,p));fl.style.setProperty('--pf',p.toFixed(3));
     var vert=innerWidth<=720,total=(vert?fl.clientHeight:fl.clientWidth)-36,fill=p*total;
     steps.forEach(function(s,i){var pos=vert?s.offsetTop:s.offsetLeft;s.classList.toggle('done',p>0.02&&(i===0||fill>=pos-2));});}
   function onS(){rd();flow();}
@@ -2075,6 +2081,15 @@ html.rm #heroName .ch{opacity:1 !important;transform:none !important}
   split();
   var hero=document.getElementById('inicio'),was=true;
   if(hero)new MutationObserver(function(){var now=hero.classList.contains('in');if(now&&!was)split();was=now;}).observe(hero,{attributes:true,attributeFilter:['class']});
+})();
+</script>
+<script>
+(function(){
+  // endereço com # que não leva a nenhuma seção existente -> página 404
+  function check(){var h=location.hash;if(!h||h==='#')return;var id;try{id=decodeURIComponent(h.slice(1));}catch(e){id=h.slice(1);}
+    if(document.getElementById(id))return;location.replace('404.html?from='+encodeURIComponent(h));}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',check);else check();
+  addEventListener('hashchange',check);
 })();
 </script>
 </body>
