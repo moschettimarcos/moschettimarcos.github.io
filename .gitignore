@@ -1,0 +1,12 @@
+# Dependências e builds
+node_modules/
+_site/
+
+# Ferramentas locais
+.claude/
+.vscode/
+
+# Arquivos do sistema
+Thumbs.db
+desktop.ini
+.DS_Store
